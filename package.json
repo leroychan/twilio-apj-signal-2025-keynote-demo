@@ -1,0 +1,49 @@
+{
+  "author": "https://github.com/pBread",
+  "name": "signal-2025-conversation-relay",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "clear:calls": "npm run clear calls",
+    "clear:users": "npm run clear users",
+    "clear": "tsx scripts/data/clear.ts",
+    "dev": "nodemon --exec tsx server/server.ts --delay 1500ms --ignore ui",
+    "grok": "tsx scripts/ngrok.ts",
+    "process:tools": "tsx scripts/setup/process-tools.ts",
+    "reset": "yarn clear:users && yarn dev",
+    "test": "vitest --config ./scripts/vitest.config.ts",
+    "ui": "cd ui; npm run dev"
+  },
+  "dependencies": {
+    "@azure/ai-projects": "^1.0.0-beta.5",
+    "@azure/identity": "^4.9.1",
+    "@azure/search-documents": "^12.1.0",
+    "dotenv-flow": "^4.1.0",
+    "express": "^5.1.0",
+    "express-ws": "^5.0.2",
+    "lodash.chunk": "^4.2.0",
+    "lodash.debounce": "^4.0.8",
+    "lodash.result": "^4.5.2",
+    "lodash.set": "^4.3.2",
+    "nanoid": "^5.1.5",
+    "openai": "^4.95.1",
+    "p-queue": "^8.1.0",
+    "twilio": "^5.5.2",
+    "twilio-sync": "^3.3.7",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/express-ws": "^3.0.5",
+    "@types/lodash.chunk": "^4.2.9",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/lodash.result": "^4.5.9",
+    "@types/lodash.set": "^4.3.9",
+    "@types/node": "^22.14.1",
+    "@types/p-queue": "^3.1.0",
+    "nodemon": "^3.1.9",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

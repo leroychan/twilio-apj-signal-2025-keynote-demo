@@ -1,0 +1,240 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Underwriter-Brain Tool API",
+    "version": "1.0.0",
+    "description": "Endpoints used by internal AI agents to analyse mortgage files and retrieve underwriting data."
+  },
+  "servers": [{ "url": "https://{{HOSTNAME}}/agent" }],
+  "paths": {
+    "/get_application": {
+      "post": {
+        "summary": "Get Application",
+        "description": "Returns the full mortgage-application payload for the specified user and form.",
+        "operationId": "get_application",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "formName",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Application JSON." } }
+      }
+    },
+
+    "/analyze_document": {
+      "post": {
+        "summary": "Analyze Document",
+        "description": "Runs doc-analysis on one document of the application.",
+        "operationId": "analyze_document",
+        "parameters": [
+          {
+            "name": "documentType",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Analysis result." } }
+      }
+    },
+
+    "/extract_document_data": {
+      "post": {
+        "summary": "Extract Document Data",
+        "description": "Pulls discrete fields from a document.",
+        "operationId": "extract_document_data",
+        "parameters": [
+          {
+            "name": "documentType",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Field/value JSON." } }
+      }
+    },
+
+    "/get_customer_profile": {
+      "post": {
+        "summary": "Get Customer Profile",
+        "description": "Retrieves borrower profile information.",
+        "operationId": "get_customer_profile",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Customer profile JSON." } }
+      }
+    },
+
+    "/get_income_history": {
+      "post": {
+        "summary": "Get Income History",
+        "description": "Returns time-series income data (tax returns, 1099s, etc.).",
+        "operationId": "get_income_history",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Array of income records." } }
+      }
+    },
+
+    "/validate_cpa_credentials": {
+      "post": {
+        "summary": "Validate CPA Credentials",
+        "description": "Checks that a CPA/EA license is active and in good standing.",
+        "operationId": "validate_cpa_credentials",
+        "parameters": [
+          {
+            "name": "licenseNumber",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "stateCode",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "minLength": 2, "maxLength": 2 }
+          }
+        ],
+        "responses": { "200": { "description": "Validation result." } }
+      }
+    },
+
+    "/assess_income_stability": {
+      "post": {
+        "summary": "Assess Income Stability",
+        "description": "Determines whether income is stable or volatile under lender policy.",
+        "operationId": "assess_income_stability",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "formName",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Stability assessment." } }
+      }
+    },
+
+    "/calculate_dti_ratio": {
+      "post": {
+        "summary": "Calculate DTI Ratio",
+        "description": "Computes front-end and back-end debt-to-income ratios.",
+        "operationId": "calculate_dti_ratio",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "formName",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "qualifyingIncome",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": { "200": { "description": "DTI calculation JSON." } }
+      }
+    },
+
+    "/suggest_required_documents": {
+      "post": {
+        "summary": "Suggest Required Documents",
+        "description": "Generates a checklist of extra docs needed for the loan file.",
+        "operationId": "suggest_required_documents",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "formName",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Array of document names." } }
+      }
+    },
+
+    "/fetch_market_rates": {
+      "post": {
+        "summary": "Fetch Market Rates",
+        "description": "Returns current non-QM rate sheet rows matching loan parameters.",
+        "operationId": "fetch_market_rates",
+        "parameters": [
+          {
+            "name": "loanAmount",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "ltv",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "number", "format": "float" }
+          },
+          {
+            "name": "fico",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": { "200": { "description": "Rate/fee grid JSON." } }
+      }
+    }
+  }
+}

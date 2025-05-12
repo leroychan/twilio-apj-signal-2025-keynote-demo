@@ -1,0 +1,76 @@
+[
+  {
+    "name": "id",
+    "type": "Edm.String",
+    "searchable": false,
+    "filterable": false,
+    "retrievable": true,
+    "stored": true,
+    "sortable": false,
+    "facetable": false,
+    "key": true,
+    "synonymMaps": []
+  },
+  {
+    "name": "vector",
+    "type": "Collection(Edm.Single)",
+    "searchable": true,
+    "filterable": false,
+    "retrievable": true,
+    "stored": true,
+    "sortable": false,
+    "facetable": false,
+    "key": false,
+    "dimensions": 3072,
+    "vectorSearchProfile": "<YOUR_SEARCH_PROFILE>",
+    "synonymMaps": []
+  },
+  {
+    "name": "feedback",
+    "type": "Edm.String",
+    "searchable": false,
+    "filterable": false,
+    "retrievable": true,
+    "stored": true,
+    "sortable": false,
+    "facetable": false,
+    "key": false,
+    "synonymMaps": []
+  },
+  {
+    "name": "topics",
+    "type": "Collection(Edm.String)",
+    "searchable": false,
+    "filterable": true,
+    "retrievable": true,
+    "stored": true,
+    "sortable": false,
+    "facetable": true,
+    "key": false,
+    "synonymMaps": []
+  },
+  {
+    "name": "active",
+    "type": "Edm.Boolean",
+    "searchable": false,
+    "filterable": true,
+    "retrievable": true,
+    "stored": true,
+    "sortable": false,
+    "facetable": true,
+    "key": false,
+    "synonymMaps": []
+  },
+  {
+    "name": "callSid",
+    "type": "Edm.String",
+    "searchable": false,
+    "filterable": true,
+    "retrievable": true,
+    "stored": true,
+    "sortable": false,
+    "facetable": false,
+    "key": false,
+    "synonymMaps": []
+  }
+]
