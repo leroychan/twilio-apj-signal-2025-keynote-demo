@@ -65,9 +65,14 @@ export const DEFAULT_TWILIO_NUMBER = env("DEFAULT_TWILIO_NUMBER");
 // ========================================
 export const USER_ID = env("USER_ID");
 export const DEMO_USER_PHONE_NUMBER = env("DEMO_USER_PHONE_NUMBER");
+export const DEMO_USER_PHONE_NUMBER_2 = env("DEMO_USER_PHONE_NUMBER_2");
 export const DEMO_USER_FIRST_NAME = env("DEMO_USER_FIRST_NAME");
 export const DEMO_USER_LAST_NAME = env("DEMO_USER_LAST_NAME");
 export const DEMO_USER_EMAIL = env("DEMO_USER_EMAIL");
+
+export let ALLOWED_PHONE_NUMBERS = env("ALLOWED_PHONE_NUMBERS", false);
+if (ALLOWED_PHONE_NUMBERS)
+  ALLOWED_PHONE_NUMBERS = JSON.parse(ALLOWED_PHONE_NUMBERS);
 
 // ========================================
 // Audio

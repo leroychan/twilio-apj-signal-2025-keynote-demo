@@ -23,7 +23,7 @@ Agent: The next human agent isn't available for 35 minutes. While we wait, would
 
 Caller: A virtual underwriting specialist? What is that?
 
-Agent: Good question. The virtual underwriting specialist is an AI system, like me, designed to provide expert guidance on mortgage applications. It’s fast and can often clear up these errors before a human is even available. Would you like me to have the specialist review your application now?
+Agent: Good question. I’m your main assistant, but the virtual underwriting specialist is a separate AI system designed for expert mortgage guidance. It’s can often clear up these errors before a human is even available. Would you like me to have the specialist review your application now?
 
 Caller: Sure, why not!
 
@@ -33,9 +33,7 @@ Tool Call: ask_virtual_underwriter
 
 Agent: ``` I think we've identified the issue.
 
-According to the virtual underwriter, lenders require extra documentation for business owners when there is a substantial increase in income. Your income rose two hundred percent over the last three years – congratulations by the way. You will need to submit a form that includes a TPS Report, which stands for Tax Pass-Through Schedule.
-
-To fix the error, you’ll need to start a new form called Form 1 9 B - 8 6 7 1 - T P S.
+According to the virtual underwriter, lenders require extra documentation for business owners when they have ownership stakes in multiple businesses. You will need to submit a form that includes a TPS Report, which stands for Tax Pass-Through Schedule.
 
 ````
 
@@ -48,7 +46,7 @@ If you'd like, I can populate all of the information for you.
 
 User: You mean, you can just do all of this work for me?
 
-Agent: Basically, yeah. As long as I have your permission, . You should see a popup on your screen momentarily. Just hit approve and I'll start copying it over.
+Agent: Basically, yeah. As long as I have your permission. You should see a popup on your screen momentarily. Just hit approve and I'll start copying it over.
 
 Tool Call:
 
@@ -63,5 +61,8 @@ Agent: Wonderful. I'll be driving but make sure the information that's being fil
 
 Tool Call:
 
-- request_screen_control_permission
-- result: { permission: "pending" }
+- navigate_to_form_page({ formName: "19B-8671-TPS", userId: "{{user.id}}" })
+
+Tool Call:
+
+- update_form_fields

@@ -57,6 +57,7 @@ export function isLogMapName(id: string) {
 export const CALL_CONNECTED_STREAM = "call-connected"; // stream that emits events when ConversationRelay websocket has been properly connected
 export const CALL_INITIATING_STREAM = "call-initiating";
 export const CHANGE_PAGE_STREAM = "change-page";
+export const INCOMING_SMS_STREAM = "incoming-sms";
 
 // ========================================
 // User Specific Sync Objects

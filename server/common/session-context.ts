@@ -233,3 +233,12 @@ export interface TopicLog extends DemoLogBase {
   topic: string;
   articles: string[]; // knowledge articles
 }
+
+// ========================================
+// Incoming SMS
+// ========================================
+export interface IncomingSMSStreamMsg {
+  body: string;
+  from: string;
+  to: string;
+}

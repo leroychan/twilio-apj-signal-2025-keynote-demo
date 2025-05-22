@@ -98,9 +98,7 @@ export const extract_document_data: RequestHandler = async (req, res) => {
       last_name: "Bookman",
 
       phone: "+18885550001",
-      email: "jbookman@gmail.com",
-
-      licenseId: "CPA-1234",
+      email: "jbookman@cpa.com",
     },
   };
 

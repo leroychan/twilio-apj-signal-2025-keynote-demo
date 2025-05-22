@@ -55,15 +55,23 @@ export class OpenAIResponseService implements LLMInterface {
   // ========================================
   private stream: Stream<ResponseStreamEvent> | undefined = undefined;
   private responseId: string | undefined = undefined; // the responseId is used to detect when a stream was aborted or overwritten
+  private timeout: NodeJS.Timeout | undefined = undefined;
 
   get isStreaming() {
     return !!this.stream;
   }
 
   run = async () => {
-    this.log.info("llm", "run started");
-    await this.doResponse();
-    this.log.info("llm", "run finished");
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
+    }
+
+    this.timeout = setTimeout(async () => {
+      this.log.info("llm", "run started");
+      await this.doResponse();
+      this.log.info("llm", "run finished");
+    }, 200);
   };
 
   doResponse = async (
@@ -115,6 +123,8 @@ export class OpenAIResponseService implements LLMInterface {
         responseId = chunk.response.id;
         this.responseId = responseId;
       }
+
+      if (this.responseId !== responseId) break;
 
       // ========================================
       // Text
@@ -341,6 +351,11 @@ export class OpenAIResponseService implements LLMInterface {
     if (this.stream && !this.stream?.controller.signal.aborted)
       this.stream?.controller.abort();
 
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = undefined;
+    }
+
     this.cleanup();
   };
 
@@ -348,6 +363,7 @@ export class OpenAIResponseService implements LLMInterface {
     this.responseId = undefined;
     this.retryPromise = undefined;
     this.stream = undefined;
+    if (this.timeout) this.timeout = undefined;
   };
 
   /** Checks for and handles any existing completion stream. There should only be one stream open at any given time. */

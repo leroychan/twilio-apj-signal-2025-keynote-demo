@@ -25,7 +25,6 @@ export class AgentUnderwriter {
 
   reviewApplication = async (args: UnderwriterQuestion) => {
     this.log.info("underwriter", "asking underwriter");
-    this.log.debug("underwriter", "args", JSON.stringify(args, null, 2));
 
     const th = await client.agents.createThread({
       messages: [
@@ -55,8 +54,6 @@ export class AgentUnderwriter {
         result = JSON.parse(value) as UnderwriterAnswer;
       }
     }
-
-    this.log.debug("underwriter", "run:\n", JSON.stringify(result, null, 2));
 
     return result;
   };

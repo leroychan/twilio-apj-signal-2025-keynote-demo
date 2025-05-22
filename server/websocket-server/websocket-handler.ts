@@ -12,7 +12,11 @@ import {
   type FormRecord_2,
 } from "../common/forms.js";
 import type { BotTextTurn } from "../common/session-turns.js";
-import { makeContextMapName, makeUserDataMapName } from "../common/sync-ids.js";
+import {
+  INCOMING_SMS_STREAM,
+  makeContextMapName,
+  makeUserDataMapName,
+} from "../common/sync-ids.js";
 import type { LLMInterface } from "./llm/interface.js";
 import { OpenAIResponseService } from "./llm/openai-response.js";
 import { getMakeWebsocketLogger, WebsocketLogger } from "./logger.js";
@@ -21,7 +25,10 @@ import { ConversationRelayAdapter } from "./twilio/conversation-relay-adapter.js
 import { startRecording } from "./twilio/recording.js";
 import { getSyncClientPromise } from "./twilio/sync-client.js";
 import { SyncQueueService } from "./twilio/sync-queue.js";
-import { ScreenControlState } from "../common/session-context.js";
+import {
+  IncomingSMSStreamMsg,
+  ScreenControlState,
+} from "../common/session-context.js";
 
 export const conversationRelayWebsocketHandler = async (ws: WebSocket) => {
   const relay = new ConversationRelayAdapter(ws); // wrapper around the ConversationRelay websocket
@@ -77,6 +84,7 @@ export const conversationRelayWebsocketHandler = async (ws: WebSocket) => {
   // ========================================
   // Handle Incoming Messages from Conversation Relay
   // ========================================
+
   // human speech received
   relay.onPrompt((ev) => {
     log.info("relay.onPrompt", ev.voicePrompt);
@@ -91,9 +99,10 @@ export const conversationRelayWebsocketHandler = async (ws: WebSocket) => {
     }
 
     store.turns.addHumanText({ content: ev.voicePrompt });
-    setTimeout(() => {
-      llm.run();
-    }, 200);
+    llm.run();
+    // setTimeout(() => {
+    //   llm.run();
+    // }, 200);
   });
 
   // human interrupts bot
@@ -244,9 +253,9 @@ export const conversationRelayWebsocketHandler = async (ws: WebSocket) => {
   for (const turn of store!.turns.list()) syncQueue.addTurn(turn);
 
   // ========================================
-  // Form Subscribers
+  // Sync Subscribers
   // ========================================
-  // the session context is a slave to the user's sync record
+  // the session context's form is controlled by to the user's sync record
   sync.map(makeUserDataMapName(store!.context.user.id)).then((map) => {
     map.on("itemUpdated", ({ item }) => {
       const data = item.data as FormRecord;
@@ -257,6 +266,21 @@ export const conversationRelayWebsocketHandler = async (ws: WebSocket) => {
       if (data.formName === FORM_NAME_2) {
         store.context.update({ form_2: data as FormRecord_2 });
       }
+    });
+  });
+
+  // incoming sms
+  // note: in a real implementation, 2way SMS should be done Twilio Conversation w/Conversation-Scoped Webhook
+  sync.stream(INCOMING_SMS_STREAM).then((stream) => {
+    stream.on("messagePublished", ({ message }) => {
+      const data = message.data as IncomingSMSStreamMsg;
+
+      store.turns.addSystemTurn({
+        content: `sms message received. body: "${data.body}"`,
+        metadata: { origin: "sms" },
+      });
+
+      if (!llm.isStreaming) llm.run();
     });
   });
 

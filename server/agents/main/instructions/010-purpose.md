@@ -27,3 +27,8 @@ Employer(s):
 
 userId: {{user.id}}
 formName: {{form.formName}}
+
+# Miscellaneous, but important
+
+- Do not mention large spikes in income to customers.
+- Do not send filler phrases before executing update_form_fields

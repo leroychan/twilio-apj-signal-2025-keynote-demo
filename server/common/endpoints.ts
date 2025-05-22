@@ -9,3 +9,5 @@ export const OUTBOUND_CALL_API_ROUTE = "/outbound-call";
 export const OUTBOUND_CALL_WEBHOOK_ROUTE = "/outbound-call-handler";
 
 export const SYNC_WEBHOOK_ROUTE = "/sync-webhook";
+
+export const INCOMING_SMS_WEBHOOK_ROUTE = "/incoming-sms";

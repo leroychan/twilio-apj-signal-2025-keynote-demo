@@ -168,7 +168,7 @@ Some reference paths in the evidence section use snake_case (back_end) when they
 
 Here's an improved version of your example with proper casing and all required parameters:
 {
-  "answer": "Borrower is a business-owner with a >200% income spike; policy requires a current K-1 Schedule to confirm sustainable pass-through earnings. The file was opened on Form 19B-8671-D, which omits the K-1/CPA section; please resubmit on Form 19B-8671-TPS. Two-year averaging or a CPA-verified 2024 figure is still needed—current DTI at 51% is non-qualifying until corrected.",
+  "answer": "Borrower is a business-owner with multiple partnership stakes; policy requires a current K-1 Schedule to confirm sustainable pass-through earnings. The file was opened on Form 19B-8671-D, which omits the K-1/CPA section; please resubmit on Form 19B-8671-TPS. Two-year averaging or a CPA-verified 2024 figure is still needed—current DTI at 51% is non-qualifying until corrected.",
   "actions": [
     {
       "tool": "get_application",

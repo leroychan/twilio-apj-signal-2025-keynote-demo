@@ -109,7 +109,7 @@ const tools: Tool[] = [
     name: "update_form_fields",
     strict: true,
     description:
-      "Update one or more fields on a user form using dot- or bracket-notation paths. NO_FILLER_PHRASES",
+      "Update one or more fields on a user form using dot- or bracket-notation paths. DO NOT INCLUDE FILLER PHRASES WHEN EXECUTING THIS TOOL!. ",
     parameters: {
       type: "object",
       properties: {

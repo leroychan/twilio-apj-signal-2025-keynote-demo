@@ -28,6 +28,7 @@ import {
 import type { TwilioCallWebhookPayload } from "../../common/twilio-types.js";
 import { ServerlessLogger } from "../logger.js";
 import { makeConversationRelayTwiML } from "../utils/twiml.js";
+import { ALLOWED_PHONE_NUMBERS } from "../../env.js";
 
 const screenCall: RequestHandler = async (req, res) => {
   const payload = req.body as TwilioCallWebhookPayload;
@@ -132,6 +133,7 @@ export const incomingCallWebhookHandler: RequestHandler = async (
       ...relayConfig,
       callSid,
       context,
+      welcomeGreetingInterruptible: false,
 
       parameters: { welcomeGreeting }, // include greeting in parameters so the websocket server can add the welcome message to the turn store
       welcomeGreeting,

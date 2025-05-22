@@ -8,30 +8,25 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env.js";
 import { getActiveCallSid } from "./cache.js";
-import {
-  FORM_NAME_1,
-  FORM_NAME_2,
-  FormRecord,
-  makeForm1,
-  makeForm2,
-} from "./forms.js";
-import { users } from "./mock-database/users.js";
+import { FormRecord } from "./forms.js";
 import {
   ChangePagePayload,
   DemoLogItem,
   DemoLogItemParams,
+  IncomingSMSStreamMsg,
 } from "./session-context.js";
-import { isSyncItemAlreadyCreated, isSyncNotFound } from "./sync-errors.js";
+import { isSyncItemAlreadyCreated } from "./sync-errors.js";
 import {
   CALL_INITIATING_STREAM,
   CHANGE_PAGE_STREAM,
+  INCOMING_SMS_STREAM,
   makeContextMapName,
   makeFormItemName,
   makeLogMapName,
   makeUserDataMapName,
-  makeUserRecordMapItemName,
 } from "./sync-ids.js";
 import type { TwilioCallWebhookPayload } from "./twilio-types.js";
+import { WebsocketLogger } from "../websocket-server/logger.js";
 
 const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
@@ -80,128 +75,6 @@ export async function updateCallStatus(
   const data = { ...oldData, status };
 
   return await syncMapItemApi.update({ data });
-}
-
-export async function checkMakeUserSyncObjects(userId: string) {
-  const uniqueName = makeUserDataMapName(userId);
-
-  const title = `user setup ${userId}\t`;
-
-  let isMapCreated = false;
-  try {
-    console.log(`${title} sync map check: starting`);
-    if (!userId) throw Error(`userId is not defined`);
-    await sync.syncMaps(uniqueName).fetch(); // throws 404 if not found
-    isMapCreated = true;
-    console.log(`${title} sync map check: found`);
-  } catch (error) {
-    if (isSyncNotFound(error)) {
-      console.log(`${title} sync map check: not found`);
-
-      isMapCreated = false;
-    } else {
-      console.error(`Error fetching sync user map`);
-      throw error;
-    }
-  }
-
-  if (!isMapCreated) {
-    console.log(`${title} create sync map: starting`);
-    await sync.syncMaps.create({ uniqueName });
-    console.log(`${title} create sync map: success`);
-  }
-
-  let isForm1Created = false;
-  try {
-    console.log(`${title} form1 map item check: starting`);
-
-    await sync
-      .syncMaps(uniqueName)
-      .syncMapItems(makeFormItemName(userId, FORM_NAME_1))
-      .fetch(); // throws 404 if not found
-    isForm1Created = true;
-    console.log(`${title} form1 map item check: found`);
-  } catch (error) {
-    if (isSyncNotFound(error)) {
-      console.log(`${title} form1 map item check: not found`);
-      isForm1Created = false;
-    } else {
-      console.error(`Error fetching sync form`);
-      throw error;
-    }
-  }
-
-  const user = users.find((user) => user.id === userId);
-  if (!user) throw Error(`User not found. Id: ${userId}`);
-
-  if (!isForm1Created) {
-    console.log(`${title} creating form1 map item: starting`);
-    const form = makeForm1(user);
-    await sync.syncMaps(uniqueName).syncMapItems.create({
-      key: form.id,
-      data: form,
-    });
-    console.log(`${title} creating form1 map item: success`);
-  }
-
-  let isForm2Created = false;
-  try {
-    console.log(`${title} form2 map item check: starting`);
-
-    await sync
-      .syncMaps(uniqueName)
-      .syncMapItems(makeFormItemName(userId, FORM_NAME_2))
-      .fetch(); // throws 404 if not found
-    isForm2Created = true;
-    console.log(`${title} form2 map item check: found`);
-  } catch (error) {
-    if (isSyncNotFound(error)) {
-      console.log(`${title} form2 map item check: not found`);
-      isForm2Created = false;
-    } else {
-      console.error(`Error fetching sync form`);
-      throw error;
-    }
-  }
-
-  if (!isForm2Created) {
-    console.log(`${title} creating form2 map item: starting`);
-    const form = makeForm2(user);
-    await sync.syncMaps(uniqueName).syncMapItems.create({
-      key: form.id,
-      data: form,
-    });
-    console.log(`${title} creating form2 map item: success`);
-  }
-
-  let isRecordCreated = false;
-  const userRecordItemName = makeUserRecordMapItemName(userId);
-  try {
-    console.log(`${title} user record map item check: starting`);
-
-    await sync.syncMaps(uniqueName).syncMapItems(userRecordItemName).fetch(); // throws 404 if not found
-    isRecordCreated = true;
-    console.log(`${title} user record map item check: found`);
-  } catch (error) {
-    if (isSyncNotFound(error)) {
-      console.log(`${title} user record map item check: not found`);
-      isRecordCreated = false;
-    } else {
-      console.error(`Error fetching sync record`);
-      throw error;
-    }
-  }
-
-  if (!isRecordCreated) {
-    console.log(`${title} created user record map item: starting`);
-    const user = users.find((user) => user.id === userId);
-    if (!user) throw Error("cannot find user");
-    await sync.syncMaps(uniqueName).syncMapItems.create({
-      key: userRecordItemName,
-      data: user,
-    });
-    console.log(`${title} created user record map item: success`);
-  }
 }
 
 // ========================================
@@ -291,6 +164,26 @@ async function sendDemoLogHandler(params: DemoLogItemParams) {
         .syncMaps(uniqueMapName)
         .syncMapItems(item.id)
         .update({ data: { ...current, ...item } });
+
+      return;
+    } else {
+      console.warn("failed to send demo log", JSON.stringify(params));
     }
+  }
+}
+
+// ========================================
+// SMS Stream
+// ========================================
+export async function sendIncomingSMSStreamMsg(data: IncomingSMSStreamMsg) {
+  try {
+    await sync.syncStreams(INCOMING_SMS_STREAM).streamMessages.create({ data });
+  } catch (error) {
+    console.warn(
+      "incoming SMS received, but failed to emit Sync Event. data: ",
+      JSON.stringify(data),
+      "error\n",
+      error,
+    );
   }
 }

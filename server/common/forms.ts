@@ -123,7 +123,7 @@ export function makeForm1(user: UserRecord): FormRecord_1 {
     email: user?.email ?? "",
     phone: user?.phone ?? "",
     borrower_address: {
-      ...base,
+      ...base.borrower_address,
       street: "101 Spear Street",
       city: "San Francisco",
       state: "CA",

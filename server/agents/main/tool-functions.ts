@@ -200,32 +200,57 @@ export async function update_form_fields(
   //   deps.relay.playMedia(AUDIO_TYPING, { loop: 15, preemptible: true });
   // }, 15 * 1000);
 
-  for (const updates of updateChunks) {
-    for (const { path, value } of updates) {
-      try {
-        const json = maybeParseJson(value);
-        set(form, path, json);
-      } catch (err) {
-        deps.log.error("tools", "update_form_fields failed", {
-          path,
-          value,
-          err,
-        });
-        return {
-          status: "failed",
-          message: `Could not apply value at path \"${path}\": ${
-            (err as Error).message
-          }`,
-        } as const;
-      }
+  for (const { path, value } of args.updates) {
+    try {
+      const json = maybeParseJson(value);
+      set(form, path, json);
+    } catch (err) {
+      deps.log.error("tools", "update_form_fields failed", {
+        path,
+        value,
+        err,
+      });
+      return {
+        status: "failed",
+        message: `Could not apply value at path \"${path}\": ${
+          (err as Error).message
+        }`,
+      } as const;
     }
-    // send to sync
-    await updateForm(
-      deps.store.context.user.id,
-      form.formName,
-      form as FormRecord,
-    );
   }
+  // send to sync
+  await updateForm(
+    deps.store.context.user.id,
+    form.formName,
+    form as FormRecord,
+  );
+
+  // for (const updates of updateChunks) {
+  //   for (const { path, value } of updates) {
+  //     try {
+  //       const json = maybeParseJson(value);
+  //       set(form, path, json);
+  //     } catch (err) {
+  //       deps.log.error("tools", "update_form_fields failed", {
+  //         path,
+  //         value,
+  //         err,
+  //       });
+  //       return {
+  //         status: "failed",
+  //         message: `Could not apply value at path \"${path}\": ${
+  //           (err as Error).message
+  //         }`,
+  //       } as const;
+  //     }
+  //   }
+  //   // send to sync
+  //   await updateForm(
+  //     deps.store.context.user.id,
+  //     form.formName,
+  //     form as FormRecord,
+  //   );
+  // }
 
   // clearInterval(interval);
 
