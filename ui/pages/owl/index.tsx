@@ -1,9 +1,9 @@
-import { MortgageFormDep } from "@/components/MortgageFormDep";
+import { MortgageForm } from "@/components/MortgageForm";
 
 export default function OwlMortgageHome() {
   return (
     <div>
-      <MortgageFormDep formName={"19B-8671-D"} />{" "}
+      <MortgageForm formName={"19B-8671-D"} />{" "}
     </div>
   );
 }
