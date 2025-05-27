@@ -12,10 +12,11 @@
     "process:tools": "tsx scripts/setup/process-tools.ts",
     "reset": "yarn clear:users && yarn dev",
     "test": "vitest --config ./scripts/vitest.config.ts",
-    "ui": "cd ui; npm run dev"
+    "ui": "cd ui; npm run dev",
+    "data:populate": "tsx scripts/data/populate.ts"
   },
   "dependencies": {
-    "@azure/ai-projects": "^1.0.0-beta.5",
+    "@azure/ai-projects": "^1.0.0-beta.8",
     "@azure/identity": "^4.9.1",
     "@azure/search-documents": "^12.1.0",
     "dotenv-flow": "^4.1.0",

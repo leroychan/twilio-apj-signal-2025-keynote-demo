@@ -1,4 +1,4 @@
-import { AIProjectsClient } from "@azure/ai-projects";
+import { AIProjectClient } from "@azure/ai-projects";
 import { DefaultAzureCredential } from "@azure/identity";
 import {
   UnderwriterAnswer,
@@ -12,9 +12,9 @@ import {
 import { SessionStore } from "../../websocket-server/session-store/index.js";
 import { ThreadMessageCompleteEvent } from "./entities.js";
 
-const client = AIProjectsClient.fromConnectionString(
+const client = new AIProjectClient(
   AZURE_CONN_STRING,
-  new DefaultAzureCredential(),
+  new DefaultAzureCredential()
 );
 
 export class AgentUnderwriter {
@@ -26,7 +26,7 @@ export class AgentUnderwriter {
   reviewApplication = async (args: UnderwriterQuestion) => {
     this.log.info("underwriter", "asking underwriter");
 
-    const th = await client.agents.createThread({
+    const th = await client.agents.threads.create({
       messages: [
         {
           role: "user",
@@ -37,8 +37,8 @@ export class AgentUnderwriter {
       ],
     });
 
-    const rawStream = await client.agents
-      .createRun(th.id, UNDERWRITER_AGENT_ID)
+    const rawStream = await client.agents.runs
+      .createThreadAndRun(UNDERWRITER_AGENT_ID, { thread: th })
       .stream();
 
     // SDK bug-work-around: force the right element type once, centrally
