@@ -14,7 +14,9 @@
     "test": "vitest --config ./scripts/vitest.config.ts",
     "ui": "cd ui; npm run dev",
     "ui-install": "cd ui; npm install",
-    "data:populate": "tsx scripts/data/populate.ts"
+    "data:populate": "tsx scripts/data/populate.ts",
+    "build": "tsc",
+    "start": "node dist/server/server.js"
   },
   "dependencies": {
     "@azure/ai-agents": "1.0.0-beta.3",
