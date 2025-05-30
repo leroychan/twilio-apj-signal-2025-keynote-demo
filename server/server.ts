@@ -30,6 +30,7 @@ import { incomingSMSWebhookHandler } from "./webhook-endpoints/incoming-sms/inde
 import { syncWebhookHandler } from "./webhook-endpoints/sync-webhook/index.js";
 import { listenForIncomingCalls } from "./websocket-server/twilio/sync-client.js";
 import { conversationRelayWebsocketHandler } from "./websocket-server/websocket-handler.js";
+import { insertDummyRecallData } from "./agents/recall/data/examples.js";
 
 const { app } = expressWs(express());
 app.use(express.urlencoded({ extended: true })).use(express.json());
@@ -136,6 +137,6 @@ function redactPhoneNumbers(input: string): string {
       const bullets = "•".repeat(digitsInAreaCodeAndPrefix);
 
       return `${preservedCountryCode}${areaCode}${bullets}`;
-    },
+    }
   );
 }
