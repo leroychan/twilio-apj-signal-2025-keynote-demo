@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { AzureOpenAI } from "openai";
+import { APIError, AzureOpenAI } from "openai";
 import type {
   ResponseCreateParamsStreaming,
   ResponseInputItem,
@@ -28,6 +28,8 @@ import type { SessionStore } from "../session-store/index.js";
 import type { ConversationRelayAdapter } from "../twilio/conversation-relay-adapter.js";
 import type { LLMEvents, LLMInterface } from "./interface.js";
 
+import { AUDIO_PROCESSING, AUDIO_TYPING } from "../../env.js";
+
 const MAX_RETRIES = 3;
 
 export class OpenAIResponseService implements LLMInterface {
@@ -40,8 +42,10 @@ export class OpenAIResponseService implements LLMInterface {
     private relay: ConversationRelayAdapter,
     private store: SessionStore
   ) {
-    this.logStreamer = createLogStreamer(`response-${Date.now()}`);
+    const logFilename = `response-${Date.now()}-${this.store.callSid}`;
+    this.logStreamer = createLogStreamer(logFilename);
     this.log = getMakeWebsocketLogger(this.store.callSid);
+    this.log.info("llm", "OpenAIResponseService initialized with log file", logFilename);
 
     this.client = new AzureOpenAI({
       apiKey: FOUNDRY_API_KEY,
@@ -67,11 +71,41 @@ export class OpenAIResponseService implements LLMInterface {
       this.timeout = undefined;
     }
 
-    this.timeout = setTimeout(async () => {
+    // this.timeout = setTimeout(async () => {
+    try {
       this.log.info("llm", "run started");
       await this.doResponse();
       this.log.info("llm", "run finished");
-    }, 200);
+    } catch (error: APIError | any) {
+      let interval: NodeJS.Timeout | undefined = undefined;
+      this.log.debug("llm", "run error", error);
+      this.log.error("llm", `run error error: ${error.message} ${error.code}`);
+      const errorMessage = error.message;
+
+      const match = errorMessage.match(/Try again in (\d+) seconds?/)
+      if (match) {
+        // If the error message contains a retry-after time, set a timeout to retry
+        const retryAfter = parseInt(match[1], 10) * 1000;
+        this.log.info("llm", `retrying after ${retryAfter}ms`);
+        this.timeout = setTimeout(() => { 
+          // clear the interval to stop playing audio
+          clearInterval(interval); 
+
+          // retrying the run method
+          this.run() 
+        }, retryAfter);
+        // Play audio indicating retry
+        interval = setInterval(() => {
+          if (!AUDIO_TYPING) return;
+          this.relay.playMedia(AUDIO_TYPING, { loop: 1, preemptible: true });
+        }, 1000);
+
+      } else {
+        this.log.error("llm", `run error: ${errorMessage} ${error.code}`,
+        );
+      }
+    }
+    // }, 200);
   };
 
   doResponse = async (
@@ -109,6 +143,8 @@ export class OpenAIResponseService implements LLMInterface {
       return this.handleRetry(attempt);
     }
 
+    this.log.debug("llm", "doResponse", "stream created");
+
     let responseId: string | undefined;
 
     let botText: BotTextTurn | undefined;
@@ -118,6 +154,7 @@ export class OpenAIResponseService implements LLMInterface {
 
     for await (const chunk of this.stream) {
       this.logStreamer.write(`${chunk.type}\n`, JSON.stringify(chunk, null, 2));
+      this.log.debug("llm", "doResponse", `processing chunk ${chunk.type}`);
 
       if (chunk.type === "response.created") {
         responseId = chunk.response.id;

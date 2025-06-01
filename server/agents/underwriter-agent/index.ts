@@ -26,6 +26,7 @@ export class AgentUnderwriter {
   reviewApplication = async (args: UnderwriterQuestion) => {
     this.log.info("underwriter", "asking underwriter");
 
+    try {
     const th = await client.agents.threads.create({
       messages: [
         {
@@ -36,6 +37,8 @@ export class AgentUnderwriter {
         },
       ],
     });
+
+    this.log.debug("underwriter", "review application");
 
     const rawStream = await client.agents.runs
       .createThreadAndRun(UNDERWRITER_AGENT_ID, { thread: th })
@@ -56,5 +59,9 @@ export class AgentUnderwriter {
     }
 
     return result;
+  } catch (error) {
+    this.log.error("underwriter", "error during underwriter review", error);
+    throw error;  
+  }
   };
 }
