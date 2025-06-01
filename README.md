@@ -42,3 +42,4 @@ Login to Azure AI Foundry
 1. Create an agent
 2. Copy the agent ID, starting with `asst_` and put it in the `.env` file variable named `UNDERWRITER_AGENT_ID`
 3. Copy or edit the prompt from file `<proj>/server/agents/underwriter-agent/instructions.md`
+4. Add Agent Action. Copy `<proj>/server/agents/underwriter-agent/tool-manifest.json` into schema of as an `OpenAPI 3.0 specified tool` Action and name it `UnderwriterBrainTool`. Note: Replace `{HOSTNAME}` with your ngrok hostname
