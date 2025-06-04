@@ -12,8 +12,11 @@ export const relayConfig: Omit<ConversationRelayAttributes, "url"> = {
 
   transcriptionProvider: process.env.ASR_TRANSCRIPTION_PROVIDER || "Deepgram",
   speechModel: process.env.ASR_SPEECH_MODEL || "nova-3-general",
+  transcriptionLanguage: process.env.ASR_SPEECH_LANGUAGE || "en",
+
+  // not published parameter for Conversation Relay
+  // midSentenceCutSilenceTimeout: 0,
 
   // transcriptionProvider: "google",
   // speechModel: "long",
-  // transcriptionLanguage: "en-AU",
 };

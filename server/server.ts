@@ -100,7 +100,7 @@ Demo User Email           ${DEMO_USER_EMAIL}
     }
   });
 }
-
+// insertDummyRecallData(); // Uncomment to insert dummy data into the Recall vector database
 main();
 
 // ========================================
