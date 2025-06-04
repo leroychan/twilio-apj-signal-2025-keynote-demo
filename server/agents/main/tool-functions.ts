@@ -50,6 +50,7 @@ async function ask_virtual_underwriter(
   }, 1000);
 
   const result = await agent.reviewApplication({ ...args, userId });
+  deps.log.debug("tools", "underwriter result",result);
 
   clearInterval(interval);
 

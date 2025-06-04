@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { AzureOpenAI } from "openai";
+import { APIError, AzureOpenAI } from "openai";
 import type {
   ResponseCreateParamsStreaming,
   ResponseInputItem,
@@ -28,6 +28,8 @@ import type { SessionStore } from "../session-store/index.js";
 import type { ConversationRelayAdapter } from "../twilio/conversation-relay-adapter.js";
 import type { LLMEvents, LLMInterface } from "./interface.js";
 
+import { AUDIO_PROCESSING, AUDIO_TYPING } from "../../env.js";
+
 const MAX_RETRIES = 3;
 
 export class OpenAIResponseService implements LLMInterface {
@@ -38,10 +40,12 @@ export class OpenAIResponseService implements LLMInterface {
 
   constructor(
     private relay: ConversationRelayAdapter,
-    private store: SessionStore,
+    private store: SessionStore
   ) {
-    this.logStreamer = createLogStreamer(`response-${Date.now()}`);
+    const logFilename = `response-${Date.now()}-${this.store.callSid}`;
+    this.logStreamer = createLogStreamer(logFilename);
     this.log = getMakeWebsocketLogger(this.store.callSid);
+    this.log.info("llm", "OpenAIResponseService initialized with log file", logFilename);
 
     this.client = new AzureOpenAI({
       apiKey: FOUNDRY_API_KEY,
@@ -67,22 +71,52 @@ export class OpenAIResponseService implements LLMInterface {
       this.timeout = undefined;
     }
 
-    this.timeout = setTimeout(async () => {
+    // this.timeout = setTimeout(async () => {
+    try {
       this.log.info("llm", "run started");
       await this.doResponse();
       this.log.info("llm", "run finished");
-    }, 200);
+    } catch (error: APIError | any) {
+      let interval: NodeJS.Timeout | undefined = undefined;
+      this.log.debug("llm", "run error", error);
+      this.log.error("llm", `run error error: ${error.message} ${error.code}`);
+      const errorMessage = error.message;
+
+      const match = errorMessage.match(/Try again in (\d+) seconds?/)
+      if (match) {
+        // If the error message contains a retry-after time, set a timeout to retry
+        const retryAfter = parseInt(match[1], 10) * 1000;
+        this.log.info("llm", `retrying after ${retryAfter}ms`);
+        this.timeout = setTimeout(() => { 
+          // clear the interval to stop playing audio
+          clearInterval(interval); 
+
+          // retrying the run method
+          this.run() 
+        }, retryAfter);
+        // Play audio indicating retry
+        interval = setInterval(() => {
+          if (!AUDIO_TYPING) return;
+          this.relay.playMedia(AUDIO_TYPING, { loop: 1, preemptible: true });
+        }, 1000);
+
+      } else {
+        this.log.error("llm", `run error: ${errorMessage} ${error.code}`,
+        );
+      }
+    }
+    // }, 200);
   };
 
   doResponse = async (
     attempt = 0,
-    previousResponseId?: string,
+    previousResponseId?: string
   ): Promise<undefined | Promise<any>> => {
     this.ensureNoActiveStream();
     this.log.info(
       "llm",
       "doResponse",
-      previousResponseId ? `previousResponseId: ${previousResponseId}` : "",
+      previousResponseId ? `previousResponseId: ${previousResponseId}` : ""
     );
 
     const tools = this.getTools();
@@ -109,6 +143,8 @@ export class OpenAIResponseService implements LLMInterface {
       return this.handleRetry(attempt);
     }
 
+    this.log.debug("llm", "doResponse", "stream created");
+
     let responseId: string | undefined;
 
     let botText: BotTextTurn | undefined;
@@ -118,6 +154,7 @@ export class OpenAIResponseService implements LLMInterface {
 
     for await (const chunk of this.stream) {
       this.logStreamer.write(`${chunk.type}\n`, JSON.stringify(chunk, null, 2));
+      this.log.debug("llm", "doResponse", `processing chunk ${chunk.type}`);
 
       if (chunk.type === "response.created") {
         responseId = chunk.response.id;
@@ -216,13 +253,13 @@ export class OpenAIResponseService implements LLMInterface {
                 this.log.warn(
                   "llm",
                   `Tool execution failed ${tool.function.name}. error: `,
-                  error,
+                  error
                 );
                 this.store.turns.setToolResult(tool.id, {
                   status: "error",
                   message: "unknown",
                 });
-              }),
+              })
           );
         }
       }
@@ -260,7 +297,7 @@ export class OpenAIResponseService implements LLMInterface {
     const turns = this.store.turns.list();
 
     const firstIndexOfPrevious = turns.findIndex(
-      (turn) => turn.role === "bot" && turn.responseId === previousResponseId,
+      (turn) => turn.role === "bot" && turn.responseId === previousResponseId
     );
 
     if (firstIndexOfPrevious === -1)
@@ -276,7 +313,7 @@ export class OpenAIResponseService implements LLMInterface {
       (item) =>
         // only include outputs. the inputs are stored on the server
         item.type === "computer_call_output" ||
-        item.type === "function_call_output",
+        item.type === "function_call_output"
     );
 
     const turnsAfterPrevious = turns.slice(firstIndexOfPrevious + 1);
@@ -290,21 +327,21 @@ export class OpenAIResponseService implements LLMInterface {
     this.translateTurnsToLLMParams(this.store.turns.list());
 
   private translateTurnsToLLMParams = (
-    turns: TurnRecord[],
+    turns: TurnRecord[]
   ): ResponseInputItem[] =>
     turns
       .filter(
         (turn) =>
-          turn.role !== "bot" || turn.type !== "text" || !!turn.content.length, // @spoken update to .spoken
+          turn.role !== "bot" || turn.type !== "text" || !!turn.content.length // @spoken update to .spoken
       )
       .flatMap(this.translateTurnToLLMParam)
-      .filter((item) => !!item);
+      .filter((item): item is ResponseInputItem => !!item);
 
   /**
    * Translates the store's turn schema to the OpenAI parameter schema required by their completion API
    */
   private translateTurnToLLMParam = (
-    turn: TurnRecord,
+    turn: TurnRecord
   ): ResponseInputItem | ResponseInputItem[] | undefined => {
     if (turn.role === "bot" && turn.type === "dtmf")
       return { role: "assistant", content: turn.content }; // @spoken update to .spoken
@@ -335,7 +372,7 @@ export class OpenAIResponseService implements LLMInterface {
           type: "function_call_output",
           call_id: tool.id,
           output: JSON.stringify(
-            tool.result ?? { status: "error", error: "unknown" },
+            tool.result ?? { status: "error", error: "unknown" }
           ),
         });
       }
@@ -372,7 +409,7 @@ export class OpenAIResponseService implements LLMInterface {
 
     this.log.warn(
       "llm",
-      "Starting a completion while one is already underway. Previous completion will be aborted.",
+      "Starting a completion while one is already underway. Previous completion will be aborted."
     );
     this.abort(); // judgement call: should previous completion be aborted or should the new one be cancelled?
   };

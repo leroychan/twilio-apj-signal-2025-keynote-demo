@@ -21,6 +21,7 @@ import {
   HOSTNAME,
   PORT,
   USER_ID,
+  PRESENTATION_MODE,
 } from "./env.js";
 import * as underwriterEndpoints from "./tool-endpoints/underwriter-tools/index.js";
 import { callStatusWebhookHandler } from "./webhook-endpoints/call-status/index.js";
@@ -30,6 +31,7 @@ import { incomingSMSWebhookHandler } from "./webhook-endpoints/incoming-sms/inde
 import { syncWebhookHandler } from "./webhook-endpoints/sync-webhook/index.js";
 import { listenForIncomingCalls } from "./websocket-server/twilio/sync-client.js";
 import { conversationRelayWebsocketHandler } from "./websocket-server/websocket-handler.js";
+import { insertDummyRecallData } from "./agents/recall/data/examples.js";
 
 const { app } = expressWs(express());
 app.use(express.urlencoded({ extended: true })).use(express.json());
@@ -91,24 +93,14 @@ Demo User Email           ${DEMO_USER_EMAIL}
 
   `;
 
-    const hostname = "•".repeat(9) + ".ngrok-free.app";
-
-    const demoMsg = `\
-Port                      ${PORT}
-Local URL                 http://localhost:${PORT}
-
-Hostname                  ${hostname}
-Incoming Call Webhook     https://${hostname}${INCOMING_CALL_WEBHOOK_ROUTE}
-Call Status Webhook       https://${hostname}${CALL_STATUS_WEBHOOK_ROUTE}
-
-Twilio Phone Number       ${DEFAULT_TWILIO_NUMBER}
-Allowed Callers           ${users.map(({ phone }) => phone).join(", ")}
-  `;
-
-    console.log(redactPhoneNumbers(demoMsg));
+    if( PRESENTATION_MODE == "demo" ) {
+      console.log(redactHostname(redactPhoneNumbers(fullMsg)));
+    } else {
+      console.log(fullMsg);
+    }
   });
 }
-
+// insertDummyRecallData(); // Uncomment to insert dummy data into the Recall vector database
 main();
 
 // ========================================
@@ -116,6 +108,19 @@ main();
 // ========================================
 function logTitle(title: string) {
   console.log(`\x1b[32m${title}\x1b[0m`);
+}
+
+function redactHostname(input: string): string {
+  const domainLikeRegex = /(?<![\w@])((https?:\/\/)?)([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?([\/\w?.=#-]*)?/g;
+
+  return input.replace(domainLikeRegex, (match, _full, protocol = '', domain) => {
+    const host = domain.split('.');
+    if (host.length < 2) return match; // not a domain, skip
+
+    host[0] = '••••••••••';
+    const redacted = protocol + host.join('.');
+    return match.replace(protocol + domain, redacted);
+  });
 }
 
 function redactPhoneNumbers(input: string): string {
@@ -136,6 +141,6 @@ function redactPhoneNumbers(input: string): string {
       const bullets = "•".repeat(digitsInAreaCodeAndPrefix);
 
       return `${preservedCountryCode}${areaCode}${bullets}`;
-    },
+    }
   );
 }
