@@ -1,5 +1,7 @@
 # Signal Keynote Demo: Conversation Relay + Azure
 
+<img src="docs/demo.gif" />
+
 # Twilio Setup
 
 1. Create API key and token and set `.env` file params `TWILIO_API_KEY` and `TWILIO_API_SECRET` respectively
