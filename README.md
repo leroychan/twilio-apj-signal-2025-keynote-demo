@@ -1,6 +1,8 @@
 # Signal Keynote Demo: Conversation Relay + Azure Foundry
 
-<img src="docs/demo.gif" />
+<p align="center">
+  <img src="docs/demo.gif" alt="Conversation Relay demo" />
+</p>
 
 # Twilio Setup
 
