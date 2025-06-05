@@ -1,4 +1,4 @@
-# Signal Keynote Demo: Conversation Relay + Azure
+# Signal 2025 Keynote Demo: Conversation Relay + Azure Foundry
 
 <img src="docs/demo.gif" />
 
