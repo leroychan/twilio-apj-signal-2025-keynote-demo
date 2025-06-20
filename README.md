@@ -14,6 +14,9 @@
 3. In the `.env.example` file, at the end are two mp3 files that need to be uploaded as Twilio assets, and their URLs set respectively
 4. Set the `DEFAULT_TWILIO_NUMBER` to a number from your Twilio account that can make outbound calls
 5. Set the `DEMO_USER_*` variables to your demo user
+6. Assign an incoming number (can be the same as outbound)
+   1. Set the Webhook to be `<YOUR_SERVER>/incoming-call`
+   2. Set the Call status changes to be `<YOUR_SERVER>/call-status`
 
 # Azure Setup
 
