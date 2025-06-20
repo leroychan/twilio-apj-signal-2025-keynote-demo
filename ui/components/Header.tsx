@@ -30,7 +30,7 @@ export function BackendHeader() {
     <header className="backend-header">
       <Link href={href}>
         {/* <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} /> */}
-        <Image alt="owl" src={"/owl-homes-icon.svg"} />
+        <Image alt="owl" src={"/owl-homes-icon.svg"}  width="200" height="50"/>
       </Link>
 
       <div
@@ -115,7 +115,7 @@ export function FrontendHeader() {
     <header className="backend-header">
       <Link href={`/owl/forms/19B-8671-${formType}`}>
         {/* <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} /> */}
-        <Image alt="owl" src={"/owl-homes-icon.svg"} />
+        <Image alt="owl" src={"/owl-homes-icon.svg"} width="200" height="50"/>
       </Link>
 
       <HoverCard>
