@@ -126,3 +126,7 @@ The steps below walks you through creating a service user (Service Principal) in
 2. copy all the `.env` configuration to respective `[env]` variables in `fly.toml`
 3. copy secrets to `.env.flysecrets`
 4. import the secrets using `fly secrets import < ./.env.flysecrets`
+
+# Populating Demo Data
+Once the application has been deployed (or before running locally) ensure that the Twilio Sync objects are populated by running the script:
+`pnpm run data:populate`
