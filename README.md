@@ -44,6 +44,13 @@ Login to Azure AI Foundry
 3. Copy or edit the prompt from file `<proj>/server/agents/underwriter-agent/instructions.md`
 4. Add Agent Action. Copy `<proj>/server/agents/underwriter-agent/tool-manifest.json` into schema of as an `OpenAPI 3.0 specified tool` Action and name it `UnderwriterBrainTool`. Note: Replace `{HOSTNAME}` with your ngrok hostname
 
+## Azure CLI (Local Development on OSX)
+Ensure Azure CLI is installed 
+
+OSX
+```sh
+brew update && brew install azure-cli
+```
 
 ### Deploying to Fly.io
 1. `fly launch` to launch a new app with Fly
