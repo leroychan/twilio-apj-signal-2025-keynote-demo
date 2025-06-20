@@ -433,7 +433,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                           ...form.cpa_contact,
                           phone: value,
                         },
-                      } as any)
+                      })
                     }
                     size={FS_INPUT}
                   />
