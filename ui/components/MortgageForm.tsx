@@ -1,5 +1,5 @@
 import type { FormNameType, SegmentInteractionLog } from "@/shared";
-import { addOneChatMsg, setIsChatOpen } from "@/state/chat";
+import { addOneChatMsg } from "@/state/chat";
 import { getUserForm, updateOneForm } from "@/state/forms";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { selectSessionIds } from "@/state/sessions";
@@ -45,7 +45,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
   const handleString =
     <K extends keyof typeof form & string>(field: K) =>
     (value: string) =>
-      update({ [field]: value } as any);
+      update({ [field]: value });
 
   const renderAddress = (prefix: "borrower_address" | "property_address") => (
     <Paper withBorder p="xs" radius="sm" mb="sm" className="paper">
@@ -62,7 +62,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
             onChange={(value) =>
               update({
                 [prefix]: { ...form[prefix], [f]: value },
-              } as any)
+              })
             }
             size={FS_INPUT}
           />
@@ -78,7 +78,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
         role: "bot",
         message,
         dateCreated: new Date().toISOString(),
-      }),
+      })
     );
 
   const submitD = async () => {
@@ -95,7 +95,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
     addBotMessage("Hi there, I'm Virtual AI agent for Owl Mortgage.");
 
     addBotMessage(
-      "I see you're having trouble with your mortgage application. Would you like me to help?",
+      "I see you're having trouble with your mortgage application. Would you like me to help?"
     );
 
     // dispatch(setIsChatOpen(true));
@@ -269,7 +269,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                       onChange={(value) =>
                         update({
                           income: form.income.map((s, i) =>
-                            i === idx ? { ...s, employer: value } : s,
+                            i === idx ? { ...s, employer: value } : s
                           ),
                         })
                       }
@@ -287,7 +287,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                                   ...s,
                                   employment_type: value,
                                 }
-                              : s,
+                              : s
                           ),
                         })
                       }
@@ -301,7 +301,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                           income: form.income.map((s, i) =>
                             i === idx
                               ? { ...s, monthly_income: Number(value) }
-                              : s,
+                              : s
                           ),
                         })
                       }
@@ -403,7 +403,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                           ...form.cpa_contact,
                           first_name: value,
                         },
-                      } as any)
+                      })
                     }
                     size={FS_INPUT}
                   />
@@ -417,7 +417,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                           ...form.cpa_contact,
                           last_name: value,
                         },
-                      } as any)
+                      })
                     }
                     size={FS_INPUT}
                   />
@@ -447,7 +447,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                           ...form.cpa_contact,
                           email: value,
                         },
-                      } as any)
+                      })
                     }
                     size={FS_INPUT}
                   />
@@ -462,7 +462,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                         ...form.cpa_contact,
                         licenseId: value,
                       },
-                    } as any)
+                    })
                   }
                   size={FS_INPUT}
                 />
