@@ -85,7 +85,7 @@ function ItemSwitch(props: LogItemProps) {
   }
 }
 
-function UnderwriterItem({ callSid, itemId }: LogItemProps) {
+function UnderwriterItem({ itemId }: LogItemProps) {
   const item = useAppSelector((state) => selectLogById(state, itemId));
 
   if (item?.source !== "underwriter") return;
@@ -103,7 +103,7 @@ function UnderwriterItem({ callSid, itemId }: LogItemProps) {
   );
 }
 
-function SegmentProfileLogDisplay({ callSid, itemId }: LogItemProps) {
+function SegmentProfileLogDisplay({ itemId }: LogItemProps) {
   const item = useAppSelector((state) => selectLogById(state, itemId));
 
   if (!item) return;
@@ -124,7 +124,7 @@ function SegmentProfileLogDisplay({ callSid, itemId }: LogItemProps) {
 function SegmentInteractionLogDisplay({ itemId }: LogItemProps) {
   const seed = useUIDSeed();
   const item = useAppSelector((state) =>
-    selectLogById(state, itemId),
+    selectLogById(state, itemId)
   ) as SegmentInteractionLog;
 
   const delaySec = 0.075;
@@ -189,7 +189,7 @@ function SegmentInteractionLogDisplay({ itemId }: LogItemProps) {
   );
 }
 
-function RecallDemoLog({ callSid, itemId }: LogItemProps) {
+function RecallDemoLog({ itemId }: LogItemProps) {
   const item = useAppSelector((state) => selectLogById(state, itemId));
 
   if (!item) return;
@@ -207,7 +207,7 @@ function RecallDemoLog({ callSid, itemId }: LogItemProps) {
   );
 }
 
-function SummaryDemoLog({ callSid, itemId }: LogItemProps) {
+function SummaryDemoLog({ itemId }: LogItemProps) {
   const item = useAppSelector((state) => selectLogById(state, itemId));
 
   if (!item) return;
@@ -226,7 +226,7 @@ function SummaryDemoLog({ callSid, itemId }: LogItemProps) {
 }
 
 // used for unknown
-function BaseDemoLog({ callSid, itemId }: LogItemProps) {
+function BaseDemoLog({ itemId }: LogItemProps) {
   const item = useAppSelector((state) => selectLogById(state, itemId));
 
   if (!item) return;
