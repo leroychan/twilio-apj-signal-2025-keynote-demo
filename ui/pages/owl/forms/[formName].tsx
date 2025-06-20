@@ -1,9 +1,8 @@
 import { ChatWidget } from "@/components/ChatWidget";
 import { MortgageForm } from "@/components/MortgageForm";
 import type { FormNameType } from "@/shared";
-import { getUserForm } from "@/state/forms";
 import { useAppSelector } from "@/state/hooks";
-import { selectSessionById, selectSessionIds } from "@/state/sessions";
+import { selectSessionIds } from "@/state/sessions";
 import { useInitializeCall } from "@/state/sync";
 import { useRouter } from "next/router";
 import { useUIDSeed } from "react-uid";
@@ -13,9 +12,6 @@ export default function FormPage() {
 
   const router = useRouter();
   const formName = router.query.formName as FormNameType;
-
-  const form = useAppSelector((state) => getUserForm(state, formName));
-
   const callSids = useAppSelector(selectSessionIds);
 
   return (
