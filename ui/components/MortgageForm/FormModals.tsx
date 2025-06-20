@@ -43,7 +43,7 @@ export const ErrorModal = ({ opened, onClose }: ErrorModalProps) => {
           </Text>
         </Group>
         <Text size="sm" c="dimmed">
-          We couldn't process your mortgage application due to missing
+          We couldn&apos;t process your mortgage application due to missing
           information. Please check your inputs and try again.
         </Text>
         <Text size="sm" c="dimmed">
@@ -98,8 +98,9 @@ export const SuccessModal = ({ opened, onClose }: SuccessModalProps) => {
           </Text>
         </Group>
         <Text size="sm" c="dimmed">
-          We've received your mortgage application and will begin processing it
-          immediately. You'll receive a confirmation email shortly.
+          We&apos;ve received your mortgage application and will begin
+          processing it immediately. You&apos;ll receive a confirmation email
+          shortly.
         </Text>
         <Text size="sm" c="dimmed">
           Processing typically takes 1-2 business days.
