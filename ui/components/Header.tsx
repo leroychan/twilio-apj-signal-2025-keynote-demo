@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { IconArrowBackUp, IconRecordMail } from "@tabler/icons-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -28,7 +29,8 @@ export function BackendHeader() {
   return (
     <header className="backend-header">
       <Link href={href}>
-        <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} />
+        {/* <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} /> */}
+        <Image alt="owl" src={"/owl-homes-icon.svg"} />
       </Link>
 
       <div
