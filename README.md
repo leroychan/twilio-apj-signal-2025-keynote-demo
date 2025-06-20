@@ -1,16 +1,26 @@
-# signal-conversation-relay-azure
+<h1 align="center">
+  Twilio Signal 2025 Keynote Demo<br>
+  Conversation Relay + Azure Foundry
+</h1>
+
+<p align="center">
+  <img src="docs/demo.gif" alt="Conversation Relay demo" />
+</p>
 
 # Twilio Setup
+
 1. Create API key and token and set `.env` file params `TWILIO_API_KEY` and `TWILIO_API_SECRET` respectively
-2. Create Sync service and set `TWILIO_SYNC_SVC_SID` in *both* the `.env` file and the `ui/.env` file
-3. In the `.env.example` file, at the end are two mp3 files that need to be uploaded as Twilio assets, and their URLs set respectively 
+2. Create Sync service and set `TWILIO_SYNC_SVC_SID` in _both_ the `.env` file and the `ui/.env` file
+3. In the `.env.example` file, at the end are two mp3 files that need to be uploaded as Twilio assets, and their URLs set respectively
 4. Set the `DEFAULT_TWILIO_NUMBER` to a number from your Twilio account that can make outbound calls
 5. Set the `DEMO_USER_*` variables to your demo user
 
 # Azure Setup
+
 Most configuration will occur in the Azure AI Foundry or the Azure portal
 
 ### Azure
+
 Create an Azure account and login to https://portal.azure.com/
 
 Ensure you have an subscription, the transcript storage service uses Azure AI Search which is not available on the free tier.
@@ -26,6 +36,7 @@ The following steps are performed in the UI, these can also be completed by comm
 7. Lastly, set the `AZURE_ADMIN_KEY`, which can be found under Settings > Keys > Primary Admin Key
 
 ### Azure AI Foundry Configuration
+
 Login to Azure AI Foundry
 
 1. Create a new project and give it an awesome name
@@ -37,6 +48,7 @@ Login to Azure AI Foundry
 7. From the model catalog, deploy the `text-embedding-3-large` model, set the `EMBED_ENDPOINT` environment variable
 
 ### Agent Configuration
+
 Login to Azure AI Foundry
 
 1. Create an agent
