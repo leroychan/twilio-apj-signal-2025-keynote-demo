@@ -41,9 +41,43 @@ RUN pnpm prune --prod
 # Final stage for app image
 FROM base
 
+# Install required dependencies and Azure CLI
+RUN apt-get update && \
+    apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg && \
+    curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
+    install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/ && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" \
+      > /etc/apt/sources.list.d/azure-cli.list && \
+    apt-get update && \
+    apt-get install -y azure-cli && \
+    rm -f microsoft.gpg
+
+# Copy login script
+COPY azure-login.sh /azure-login.sh
+RUN chmod +x /azure-login.sh
+
+# # Set environment variables for Azure login (use build args for security)
+# ARG AZURE_CLIENT_ID
+# ARG AZURE_CLIENT_SECRET
+# ARG AZURE_TENANT_ID
+# ARG AZURE_SUBSCRIPTION_ID
+
+# ENV AZURE_CLIENT_ID=$AZURE_CLIENT_ID
+# ENV AZURE_CLIENT_SECRET=$AZURE_CLIENT_SECRET
+# ENV AZURE_TENANT_ID=$AZURE_TENANT_ID
+# ENV AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID
+
+# # Perform silent Azure CLI login
+# RUN az login --service-principal \
+#     --username $AZURE_CLIENT_ID \
+#     --password $AZURE_CLIENT_SECRET \
+#     --tenant $AZURE_TENANT_ID && \
+#     az account set --subscription $AZURE_SUBSCRIPTION_ID
+
 # Copy built application
 COPY --from=build /app /app
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3333
-CMD [ "pnpm", "run", "start" ]
+CMD ["/bin/bash", "-c", "/azure-login.sh && pnpm run start"]
+# CMD [ "pnpm", "run", "start" ]

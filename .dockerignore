@@ -2,5 +2,6 @@
 /node_modules
 .dockerignore
 .env
+.env.flysecrets
 Dockerfile
 fly.toml
