@@ -45,8 +45,6 @@ export function BackendHeader() {
 
 function CallSummary({ callSid }: { callSid: string }) {
   const session = useAppSelector((state) => selectSessionById(state, callSid));
-
-  const title = session?.summary?.title;
   const current = session?.summary?.current ?? "";
 
   return (
@@ -116,7 +114,8 @@ export function FrontendHeader() {
   return (
     <header className="backend-header">
       <Link href={`/owl/forms/19B-8671-${formType}`}>
-        <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} />
+        {/* <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} /> */}
+        <Image alt="owl" src={"/owl-homes-icon.svg"} />
       </Link>
 
       <HoverCard>
