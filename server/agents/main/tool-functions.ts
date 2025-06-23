@@ -12,9 +12,10 @@ import type { StoreToolCall } from "../../common/session-turns.js";
 import { sendPageChange, updateForm } from "../../common/sync-rest.js";
 import type { WebsocketLogger } from "../../websocket-server/logger.js";
 import type { SessionStore } from "../../websocket-server/session-store/index.js";
-import type { ConversationRelayAdapter } from "../../websocket-server/twilio/conversation-relay-adapter.js";
+import type { ConversationRelayAdapter, HandoffData } from "../../websocket-server/twilio/conversation-relay-adapter.js";
 import { AgentUnderwriter } from "../underwriter-agent/index.js";
 import { AUDIO_PROCESSING, AUDIO_TYPING } from "../../env.js";
+import { ca } from "zod/v4/locales";
 
 export interface ToolExecutionDependencies {
   log: WebsocketLogger;
@@ -258,6 +259,44 @@ export async function update_form_fields(
   return { status: "success", applied: args.updates.length };
 }
 
+interface HandOffToTwimlArgs {
+  destination: "agent" | "end"; // "agent" for human agent, "end" to end the conversation or pass to Twiml Flow
+}
+export function handoff_to_twiml(
+  args: HandOffToTwimlArgs, // "agent" for human agent, "end" to end the conversation or pass to Twiml Flow
+  deps: ToolExecutionDependencies,
+) {
+  // deps.store.context.update((ctx) => ({
+  //   handoff: {
+  //     ...ctx.handoff,
+  //     destination,
+  //     status: "requested",
+  //   },
+  // }));
+  
+  const dest = args.destination;
+
+  deps.log.info("tools", "handoff_to_twiml", {
+    dest,
+    userId: deps.store.context.user.id,
+    callSid: deps.store.context.call.sid,
+  });
+
+  const handoffData: HandoffData = {
+    reasonCode: "handoff_requested",
+    reason: `Handoff to ${dest} requested by caller.`,
+    data: {
+      destination: dest,
+      userId: deps.store.context.user.id,
+      callSid: deps.store.context.call.sid,
+    }
+  }
+
+  deps.relay.end(handoffData);
+
+  return { status: "success", destination: dest};
+}
+
 export const executeTool = async (
   fn: StoreToolCall["function"],
   deps: ToolExecutionDependencies,
@@ -292,7 +331,11 @@ export const executeTool = async (
       result = update_form_fields(args, deps);
       break;
 
-    default:
+    case "handoff_to_twiml":
+      result = handoff_to_twiml(args, deps);
+      break;
+
+    default:  
       throw Error("Tool not found");
   }
 
