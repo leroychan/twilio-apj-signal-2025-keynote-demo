@@ -46,6 +46,7 @@ primary_region = 'syd'
   UNDERWRITER_AGENT_ID = 'asst_xxxxxxxxxxxxxx'
   TWILIO_SYNC_SVC_SID = 'ISxxxxxxxxxxxxxx'
   CONVINTEL_SERVICE_SID = 'GAxxxxxxxxxxxxxx'
+  TWILIO_FLEX_WORKFLOW_SID = 'WWxxxxxxxxxxxxxx'
 
 [[vm]]
   memory = '1gb'
