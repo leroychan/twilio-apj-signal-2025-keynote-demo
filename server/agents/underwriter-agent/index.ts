@@ -25,6 +25,7 @@ export class AgentUnderwriter {
 
   reviewApplication = async (args: UnderwriterQuestion) => {
     this.log.info("underwriter", "asking underwriter");
+    this.log.info("underwriter", "passing args", args);
 
     try {
     const th = await client.agents.threads.create({
