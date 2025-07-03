@@ -3,10 +3,7 @@
   Conversation Relay + Azure Foundry
 </h1>
 
-<video style="width: 100%; height: auto;" controls>
-  <source src="docs/demo_small.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/7ef68e96-628b-4ecf-9471-cd7896f7d4ec
 
 # Twilio Setup
 
