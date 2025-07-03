@@ -3,7 +3,7 @@
   Conversation Relay + Azure Foundry
 </h1>
 
-https://github.com/user-attachments/assets/7ef68e96-628b-4ecf-9471-cd7896f7d4ec
+https://github.com/user-attachments/assets/3210ba0f-1471-46b8-b3c4-978a92d48f7f
 
 # Twilio Setup
 
