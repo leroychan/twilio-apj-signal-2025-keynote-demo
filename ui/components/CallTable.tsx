@@ -93,7 +93,7 @@ function CallRow({
 }: {
   callSid: string;
   isSelected: boolean;
-  toggle: () => any;
+  toggle: () => void;
 }) {
   useInitializeCall(callSid);
   const seedTopic = useUIDSeed();
@@ -159,7 +159,7 @@ function CallLoader({
   children,
 }: PropsWithChildren<{ callSid: string }>) {
   const isCallLoaded = useAppSelector((state) =>
-    getIsCallLoaded(state, callSid),
+    getIsCallLoaded(state, callSid)
   );
 
   return isCallLoaded ? children : <Loader size="sm" />;

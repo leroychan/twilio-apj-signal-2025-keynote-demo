@@ -19,6 +19,7 @@ const postHandler: NextApiHandler = async (req, res) => {
     data = JSON.parse(req.body);
   } catch (error) {
     data = req.body;
+    console.log("Error in postHandler", error);
   }
 
   try {

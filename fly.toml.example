@@ -1,0 +1,54 @@
+# fly.toml app configuration file generated for signal-conversation-relay-azure-misty-dew-3645 on 2025-06-17T19:54:36+10:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = '<your-app>'
+primary_region = 'syd'
+
+[build]
+
+[http_service]
+  internal_port = 3333
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[env]
+  PRESENTATION_MODE = 'demo'
+  HOSTNAME = '<app>.fly.dev>' # Hostname of your Fly.io App Instance
+  AZURE_LLM_DEPLOYMENT = 'gpt-4.1-nano'
+  AZURE_API_VERSION = '2025-03-01-preview' # Azure Response API requires newer version
+  AZURE_LLM_ENDPOINT = 'https://<aif-resource>.openai.azure.com/'
+  EMBED_ENDPOINT = 'https://<aif-resource>.cognitiveservices.azure.com/'
+  EMBED_MODEL = 'text-embedding-3-large'
+  EMBED_API_VERSION = '2024-04-01-preview'
+  AZURE_SEARCH_ENDPOINT = 'https://<aisearch-instance>.search.windows.net'
+  AZURE_SEARCH_INDEX = '<aisearch-index>'
+  AZURE_CONN_STRING = 'https://<aif-resource>.services.ai.azure.com/api/projects/<aif-project>'
+  DEFAULT_TWILIO_NUMBER = '+14155559999'
+  DEMO_USER_PHONE_NUMBER = '+14155551111'
+  DEMO_USER_PHONE_NUMBER_2 = '+14155552222'
+  DEMO_USER_EMAIL = 'demo@example.com'
+  DEMO_USER_FIRST_NAME = 'Demo'
+  DEMO_USER_LAST_NAME = 'User'
+  ALLOWED_PHONE_NUMBERS = '["+14155551111", "+14155552222"]'
+  USER_ID = 'us-00001'
+  AUDIO_TYPING = 'https://xxxxxxxxxxxxxx.twil.io/assets/keyboard-typing-15.mp3'
+  AUDIO_PROCESSING = 'https://xxxxxxxxxxxxxx.twil.io/assets/processing.mp3'
+  TTS_PROVIDER = 'ElevenLabs'
+  TTS_VOICE = 'IKne3meq5aSn9XLyUdCD'
+  ASR_TRANSCRIPTION_PROVIDER = 'Deepgram'
+  ASR_SPEECH_MODEL = 'nova-3-general'
+  ASR_SPEECH_LANGUAGE ='en'
+  UNDERWRITER_AGENT_ID = 'asst_xxxxxxxxxxxxxx'
+  TWILIO_SYNC_SVC_SID = 'ISxxxxxxxxxxxxxx'
+  CONVINTEL_SERVICE_SID = 'GAxxxxxxxxxxxxxx'
+  TWILIO_FLEX_WORKFLOW_SID = 'WWxxxxxxxxxxxxxx'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

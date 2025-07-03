@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { IconArrowBackUp, IconRecordMail } from "@tabler/icons-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -28,7 +29,8 @@ export function BackendHeader() {
   return (
     <header className="backend-header">
       <Link href={href}>
-        <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} />
+        {/* <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} /> */}
+        <Image alt="owl" src={"/owl-homes-icon.svg"}  width="200" height="50"/>
       </Link>
 
       <div
@@ -43,8 +45,6 @@ export function BackendHeader() {
 
 function CallSummary({ callSid }: { callSid: string }) {
   const session = useAppSelector((state) => selectSessionById(state, callSid));
-
-  const title = session?.summary?.title;
   const current = session?.summary?.current ?? "";
 
   return (
@@ -114,7 +114,8 @@ export function FrontendHeader() {
   return (
     <header className="backend-header">
       <Link href={`/owl/forms/19B-8671-${formType}`}>
-        <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} />
+        {/* <img className="header-logo" alt="owl" src={"/owl-homes-icon.svg"} /> */}
+        <Image alt="owl" src={"/owl-homes-icon.svg"} width="200" height="50"/>
       </Link>
 
       <HoverCard>

@@ -153,6 +153,26 @@ const tools: Tool[] = [
       additionalProperties: false,
     },
   },
+  
+  {
+    type: "function",
+    name: "handoff_to_twiml",
+    strict: true,
+    description:
+      "Transfer the current conversation to an person or end the conversation. This tool is used to handoff the conversation to a human agent or end the conversation.",
+    parameters: {
+      type: "object",
+      properties: {
+        destination: {
+          type: "string",
+          enum: ["agent", "end"],
+          description: "If asked to handover to a human agent, use 'agent'. If asked to end the conversation, use 'end'.",
+        },
+      },
+      required: ["destination"],
+      additionalProperties: false,
+    },
+  }
 
   // {
   //   type: "function",

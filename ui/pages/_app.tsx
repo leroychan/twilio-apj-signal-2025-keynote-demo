@@ -116,7 +116,7 @@ function usePageChangeListener() {
     for (const change of pageChanges) dispatch(removePageChange(change.id));
 
     router.push(`/owl/forms/${formName}`);
-  }, [pageChanges]);
+  }, [router, pageChanges, dispatch]);
 }
 
 function Backend({ Component, pageProps }: AppProps) {

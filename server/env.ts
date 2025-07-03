@@ -59,6 +59,7 @@ export const TWILIO_API_SECRET = env("TWILIO_API_SECRET");
 
 export const TWILIO_SYNC_SVC_SID = env("TWILIO_SYNC_SVC_SID");
 export const DEFAULT_TWILIO_NUMBER = env("DEFAULT_TWILIO_NUMBER");
+export const TWILIO_FLEX_WORKFLOW_SID = env("TWILIO_FLEX_WORKFLOW_SID");
 
 // ========================================
 // Demo Configuration

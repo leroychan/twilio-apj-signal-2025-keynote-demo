@@ -51,14 +51,6 @@ export function TurnsTable({ callSid }: { callSid: string }) {
   );
 }
 
-function safeParse(obj: any) {
-  try {
-    return JSON.parse(obj);
-  } catch (error) {
-    return "";
-  }
-}
-
 function BotRow({ turnId }: { turnId: string }) {
   const theme = useMantineTheme();
   const seed = useUIDSeed();
@@ -73,7 +65,7 @@ function BotRow({ turnId }: { turnId: string }) {
       return turn.tool_calls.map((t) => {
         const args = t.function?.arguments ?? "";
         return redactPhoneNumbers(
-          `${t.function.name}(${args})`.replaceAll("\\", ""),
+          `${t.function.name}(${args})`.replaceAll("\\", "")
         );
       });
     }

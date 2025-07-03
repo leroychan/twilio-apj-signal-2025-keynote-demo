@@ -13,9 +13,13 @@
     "reset": "yarn clear:users && yarn dev",
     "test": "vitest --config ./scripts/vitest.config.ts",
     "ui": "cd ui; npm run dev",
-    "ui-install": "cd ui; npm install",
+    "ui-install": "cd ui; pnpm install",
+    "ui:build": "cd ui; tsc",
     "data:populate": "tsx scripts/data/populate.ts",
-    "build": "tsc",
+    "build": "tsc && pnpm run copy:agents:md; pnpm run ui:build",
+    "copy:agents:md": "pnpm run copy:agents:main:instructions:md && pnpm run copy:agents:summary:instructions:md",
+    "copy:agents:main:instructions:md": "cp server/agents/main/instructions/*.md dist/server/agents/main/instructions/",
+    "copy:agents:summary:instructions:md": "cp server/agents/summary/instructions.md dist/server/agents/summary/",
     "start": "node dist/server/server.js"
   },
   "dependencies": {

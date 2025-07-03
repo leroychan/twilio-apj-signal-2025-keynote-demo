@@ -14,6 +14,9 @@
 3. In the `.env.example` file, at the end are two mp3 files that need to be uploaded as Twilio assets, and their URLs set respectively
 4. Set the `DEFAULT_TWILIO_NUMBER` to a number from your Twilio account that can make outbound calls
 5. Set the `DEMO_USER_*` variables to your demo user
+6. Assign an incoming number (can be the same as outbound)
+   1. Set the Webhook to be `<YOUR_SERVER>/incoming-call`
+   2. Set the Call status changes to be `<YOUR_SERVER>/call-status`
 
 # Azure Setup
 
@@ -55,3 +58,75 @@ Login to Azure AI Foundry
 2. Copy the agent ID, starting with `asst_` and put it in the `.env` file variable named `UNDERWRITER_AGENT_ID`
 3. Copy or edit the prompt from file `<proj>/server/agents/underwriter-agent/instructions.md`
 4. Add Agent Action. Copy `<proj>/server/agents/underwriter-agent/tool-manifest.json` into schema of as an `OpenAPI 3.0 specified tool` Action and name it `UnderwriterBrainTool`. Note: Replace `{HOSTNAME}` with your ngrok hostname
+
+## Azure CLI (Local Development on OSX)
+Ensure Azure CLI is installed 
+
+OSX
+```sh
+brew update && brew install azure-cli
+```
+
+
+## Azure - Service User
+This will be used in the Fly.io deployment (or other hosting service)
+The steps below walks you through creating a service user (Service Principal) in Azure and collecting the necessary credentials for automation, scripting, or integration purposes.
+
+## ✅ Step 1: Register an App in Microsoft Entra ID
+
+1. Go to the [Azure Portal](https://portal.azure.com)
+2. Navigate to: **Microsoft Entra ID** > **App registrations**
+3. Click **+ New registration**
+4. Fill in the form:
+   - **Name**: `my-service-user`
+   - **Supported account types**: *Accounts in this organizational directory only (Default)*
+   - **Redirect URI**: *(Optional)* Leave blank unless needed
+5. Click **Register**
+
+📌 **Save these values from the Overview page:**
+- `CLIENT_ID` = **Application (client) ID**
+- `TENANT_ID` = **Directory (tenant) ID**
+
+## ✅ Step 2: Create a Client Secret
+
+1. After registration, go to **Certificates & secrets**
+2. Click **+ New client secret**
+3. Enter a description and choose an expiry (e.g., 6 months, 12 months)
+4. Click **Add**
+5. **Copy the generated secret value immediately**
+
+📌 Save this value:
+- `CLIENT_SECRET` = *The generated secret value*
+
+> ⚠️ You will not be able to retrieve the secret again after leaving the page.
+
+## ✅ Step 3: Assign the Service Principal Access to Azure Resources
+
+1. Go to **Subscriptions**
+2. Select your target **Subscription**
+3. Click **Access control (IAM)** > **+ Add > Add role assignment**
+4. In the **Role** tab, select a roles  `Azure AI User` and `Cognitive Services Contributor`
+5. In the **Members** tab:
+   - Click **+ Select members**
+   - Search for the registered app by name
+   - Select it and click **Review + assign**
+
+## ✅ Step 4: Get Your Subscription ID
+
+1. Go to **Subscriptions**
+2. Select your active subscription
+3. Copy the **Subscription ID** from the overview pane
+
+📌 Save this value:
+- `SUBSCRIPTION_ID` = *The Subscription's GUID*
+
+
+## Deploying to Fly.io
+1. `fly launch` to launch a new app with Fly
+2. copy all the `.env` configuration to respective `[env]` variables in `fly.toml`
+3. copy secrets to `.env.flysecrets`
+4. import the secrets using `fly secrets import < ./.env.flysecrets`
+
+# Populating Demo Data
+Once the application has been deployed (or before running locally) ensure that the Twilio Sync objects are populated by running the script:
+`pnpm run data:populate`

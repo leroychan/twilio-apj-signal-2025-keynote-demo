@@ -8,7 +8,7 @@ export function DeleteCallModal({
   setSelectedSids,
 }: {
   selectedSids: string[];
-  setSelectedSids: (sids: string[]) => any;
+  setSelectedSids: (sids: string[]) => void;
 }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [isDeleting, setIsDeleting] = useState(false);

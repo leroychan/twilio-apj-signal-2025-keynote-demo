@@ -6,8 +6,7 @@ import {
   removeIncomingCallSid,
 } from "@/state/sync";
 import { twilioColor } from "@/styles/theme";
-import { Button, Loader, Notification, Text, Transition } from "@mantine/core";
-import Link from "next/link";
+import { Loader, Notification, Text, Transition } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useUIDSeed } from "react-uid";
