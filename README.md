@@ -8,6 +8,15 @@
   Your browser does not support the video tag.
 </video>
 
+BB
+<video src="docs/demo_small.mp4" controls loop playsinline></video>
+
+CC
+![Demo video](docs/demo_small.mp4)
+
+DD
+<video src="docs/demo_small.mp4" controls loop muted playsinline width="600"></video>
+
 # Twilio Setup
 
 1. Create API key and token and set `.env` file params `TWILIO_API_KEY` and `TWILIO_API_SECRET` respectively
