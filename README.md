@@ -5,7 +5,7 @@
 
 https://github.com/user-attachments/assets/3210ba0f-1471-46b8-b3c4-978a92d48f7f
 
-# 🧪 Demo Capabilities Overview
+# Demo Overview
 
 This demo showcases a multi-agent, voice-based AI system using Twilio ConversationRelay, Azure OpenAI, Azure AI Search, and Azure Foundry. It implements the **Talker-Reasoner architecture** ([paper](https://arxiv.org/abs/2410.08328v1)), a pattern for building agentic voice systems.
 
