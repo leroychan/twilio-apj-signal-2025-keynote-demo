@@ -12,10 +12,12 @@ import type { StoreToolCall } from "../../common/session-turns.js";
 import { sendPageChange, updateForm } from "../../common/sync-rest.js";
 import type { WebsocketLogger } from "../../websocket-server/logger.js";
 import type { SessionStore } from "../../websocket-server/session-store/index.js";
-import type { ConversationRelayAdapter, HandoffData } from "../../websocket-server/twilio/conversation-relay-adapter.js";
+import type {
+  ConversationRelayAdapter,
+  HandoffData,
+} from "../../websocket-server/twilio/conversation-relay-adapter.js";
 import { AgentUnderwriter } from "../underwriter-agent/index.js";
 import { AUDIO_PROCESSING, AUDIO_TYPING } from "../../env.js";
-import { ca } from "zod/v4/locales";
 
 export interface ToolExecutionDependencies {
   log: WebsocketLogger;
@@ -25,12 +27,12 @@ export interface ToolExecutionDependencies {
 
 async function get_agent_wait_time(
   { department }: { department: string },
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) {
   await new Promise((resolve) =>
     setTimeout(() => {
       resolve(null);
-    }, 2000),
+    }, 2000)
   );
 
   return { department, wait_time: "35 minutes" };
@@ -38,7 +40,7 @@ async function get_agent_wait_time(
 
 async function ask_virtual_underwriter(
   args: Omit<UnderwriterQuestion, "userId">,
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) {
   const agent = new AgentUnderwriter(deps.store);
 
@@ -51,7 +53,7 @@ async function ask_virtual_underwriter(
   }, 1000);
 
   const result = await agent.reviewApplication({ ...args, userId });
-  deps.log.debug("tools", "underwriter result",result);
+  deps.log.debug("tools", "underwriter result", result);
 
   clearInterval(interval);
 
@@ -65,7 +67,7 @@ interface RequestScreenControlPermission {
 
 async function request_screen_control_permission(
   args: RequestScreenControlPermission,
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) {
   deps.store.context.update((ctx) => ({
     screenControl: {
@@ -79,6 +81,25 @@ async function request_screen_control_permission(
   return { ...deps.store.context.screenControl };
 }
 
+interface SwitchLanguageArgs {
+  language: "en-AU" | "zh-CN";
+}
+
+async function switch_language(
+  args: SwitchLanguageArgs,
+  deps: ToolExecutionDependencies
+) {
+  deps.relay.switchTTSLanguage(args.language);
+  deps.store.context.update((ctx) => ({
+    screenControl: {
+      ...ctx.screenControl,
+      language: args.language ?? "en-AU",
+    },
+  }));
+
+  return { ...deps.store.context.screenControl };
+}
+
 interface NavigateToFormPageArgs {
   formName: FormNameType;
   userId: string;
@@ -86,7 +107,7 @@ interface NavigateToFormPageArgs {
 
 async function navigate_to_form_page(
   args: NavigateToFormPageArgs,
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) {
   const permission = deps.store.context.screenControl.permission;
 
@@ -136,7 +157,7 @@ export const UpdateFormFieldsArgsSchema = z.object({
     z.object({
       path: z.string().min(1),
       value: z.union([z.string(), z.number(), z.boolean(), z.any()]),
-    }),
+    })
   ),
 });
 export type UpdateFormFieldsArgs = z.infer<typeof UpdateFormFieldsArgsSchema>;
@@ -166,7 +187,7 @@ function maybeParseJson(value: unknown): unknown {
  */
 export async function update_form_fields(
   rawArgs: unknown,
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) {
   // 1. Permissions
   const { permission } = deps.store.context.screenControl;
@@ -224,7 +245,7 @@ export async function update_form_fields(
   await updateForm(
     deps.store.context.user.id,
     form.formName,
-    form as FormRecord,
+    form as FormRecord
   );
 
   // for (const updates of updateChunks) {
@@ -264,7 +285,7 @@ interface HandOffToTwimlArgs {
 }
 export function handoff_to_twiml(
   args: HandOffToTwimlArgs, // "agent" for human agent, "end" to end the conversation or pass to Twiml Flow
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) {
   // deps.store.context.update((ctx) => ({
   //   handoff: {
@@ -273,7 +294,7 @@ export function handoff_to_twiml(
   //     status: "requested",
   //   },
   // }));
-  
+
   const dest = args.destination;
 
   deps.log.info("tools", "handoff_to_twiml", {
@@ -289,17 +310,17 @@ export function handoff_to_twiml(
       destination: dest,
       userId: deps.store.context.user.id,
       callSid: deps.store.context.call.sid,
-    }
-  }
+    },
+  };
 
   deps.relay.end(handoffData);
 
-  return { status: "success", destination: dest};
+  return { status: "success", destination: dest };
 }
 
 export const executeTool = async (
   fn: StoreToolCall["function"],
-  deps: ToolExecutionDependencies,
+  deps: ToolExecutionDependencies
 ) => {
   let args = fn.arguments;
   try {
@@ -323,6 +344,10 @@ export const executeTool = async (
       result = request_screen_control_permission(args, deps);
       break;
 
+    case "switch_language":
+      result = switch_language(args, deps);
+      break;
+
     case "navigate_to_form_page":
       result = navigate_to_form_page(args, deps);
       break;
@@ -335,7 +360,7 @@ export const executeTool = async (
       result = handoff_to_twiml(args, deps);
       break;
 
-    default:  
+    default:
       throw Error("Tool not found");
   }
 

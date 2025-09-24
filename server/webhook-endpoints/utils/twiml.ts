@@ -41,8 +41,15 @@ export function makeConversationRelayTwiML({
     value: JSON.stringify(context),
   });
 
+  conversationRelay.language({
+    ttsProvider: "elevenlabs",
+    voice: "tOuLUAIdXShmWH7PEUrU",
+    transcriptionProvider: "deepgram",
+    code: "zh-CN",
+  });
+
   Object.entries(parameters).forEach(([name, value]) =>
-    conversationRelay.parameter({ name, value: JSON.stringify(value) }),
+    conversationRelay.parameter({ name, value: JSON.stringify(value) })
   );
 
   return response.toString();

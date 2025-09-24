@@ -93,7 +93,7 @@ Demo User Email           ${DEMO_USER_EMAIL}
 
   `;
 
-    if( PRESENTATION_MODE == "demo" ) {
+    if (PRESENTATION_MODE == "demo") {
       console.log(redactHostname(redactPhoneNumbers(fullMsg)));
     } else {
       console.log(fullMsg);
@@ -111,16 +111,20 @@ function logTitle(title: string) {
 }
 
 function redactHostname(input: string): string {
-  const domainLikeRegex = /(?<![\w@])((https?:\/\/)?)([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?([\/\w?.=#-]*)?/g;
+  const domainLikeRegex =
+    /(?<![\w@])((https?:\/\/)?)([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?([\/\w?.=#-]*)?/g;
 
-  return input.replace(domainLikeRegex, (match, _full, protocol = '', domain) => {
-    const host = domain.split('.');
-    if (host.length < 2) return match; // not a domain, skip
+  return input.replace(
+    domainLikeRegex,
+    (match, _full, protocol = "", domain) => {
+      const host = domain.split(".");
+      if (host.length < 2) return match; // not a domain, skip
 
-    host[0] = '••••••••••';
-    const redacted = protocol + host.join('.');
-    return match.replace(protocol + domain, redacted);
-  });
+      host[0] = "••••••••••";
+      const redacted = protocol + host.join(".");
+      return match.replace(protocol + domain, redacted);
+    }
+  );
 }
 
 function redactPhoneNumbers(input: string): string {

@@ -159,6 +159,7 @@ export interface ScreenControlState {
   formPage: FormNameType | undefined;
   scope?: "view_only" | "view_and_control";
   reason?: string;
+  language?: string;
 }
 
 export interface ChangePagePayload {

@@ -79,7 +79,26 @@ const tools: Tool[] = [
       additionalProperties: false,
     },
   },
-
+  {
+    type: "function",
+    name: "switch_language",
+    strict: true,
+    description:
+      "Switch the assistant's spoken and understanding language to the requested or detected language. Use this function only when the user requests or is detected to be speaking in a different language.",
+    parameters: {
+      type: "object",
+      properties: {
+        language: {
+          type: "string",
+          description:
+            "The BCP-47 language code to switch to, 'en-AU', 'zh-CN'. This value must match one of the supported codes defined in the system prompt. ",
+          enum: ["en-AU", "zh-CN"],
+        },
+      },
+      required: ["language"],
+      additionalProperties: false,
+    },
+  },
   {
     type: "function",
     name: "navigate_to_form_page",
@@ -153,7 +172,7 @@ const tools: Tool[] = [
       additionalProperties: false,
     },
   },
-  
+
   {
     type: "function",
     name: "handoff_to_twiml",
@@ -166,13 +185,14 @@ const tools: Tool[] = [
         destination: {
           type: "string",
           enum: ["agent", "end"],
-          description: "If asked to handover to a human agent, use 'agent'. If asked to end the conversation, use 'end'.",
+          description:
+            "If asked to handover to a human agent, use 'agent'. If asked to end the conversation, use 'end'.",
         },
       },
       required: ["destination"],
       additionalProperties: false,
     },
-  }
+  },
 
   // {
   //   type: "function",
