@@ -2,7 +2,7 @@ import type { FormNameType, SegmentInteractionLog } from "@/shared";
 import { addOneChatMsg } from "@/state/chat";
 import { getUserForm, updateOneForm } from "@/state/forms";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { selectSessionIds } from "@/state/sessions";
+import { selectSessionIds, selectSessionById } from "@/state/sessions";
 import {
   ActionIcon,
   Box,
@@ -22,6 +22,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { ErrorModal, SuccessModal } from "./MortgageForm/FormModals";
 import { AnimatedTextInput } from "./MortgageForm/TextInputAnimated";
+import { useI18n } from "@/context/I18nContext";
 
 const FS_INPUT = "md";
 const FS_LABEL = "lg";
@@ -37,6 +38,17 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
   const callSids = useAppSelector(selectSessionIds) ?? [];
 
   const lastCallSid = callSids[0] ?? "CA".padEnd(34, "0");
+  const session = useAppSelector((state) =>
+    selectSessionById(state, lastCallSid)
+  );
+
+  const { t, setLang } = useI18n();
+
+  setLang(
+    session?.call?.status !== "completed" && session?.screenControl?.language
+      ? session.screenControl.language
+      : "en-AU"
+  );
 
   if (!form) return null;
 
@@ -50,13 +62,13 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
   const renderAddress = (prefix: "borrower_address" | "property_address") => (
     <Paper withBorder p="xs" radius="sm" mb="sm" className="paper">
       <Text fw={500} mb="xs" tt="capitalize" size={FS_LABEL}>
-        {prefix.replace("_", " ")}
+        {t(prefix)}
       </Text>
       <Group grow>
         {(["street", "city", "state", "zip"] as const).map((f) => (
           <AnimatedTextInput
             key={f}
-            label={f.charAt(0).toUpperCase() + f.slice(1)}
+            label={t(f)}
             defaultValue={form[prefix][f]}
             value={form[prefix][f]}
             onChange={(value) =>
@@ -176,7 +188,9 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
       />
       <Container size="md">
         <Group justify="space-between" align="center" mb="md">
-          <Title order={3}>Mortgage Form {form.formName}</Title>
+          <Title order={3}>
+            {t("mortgageForm")} {form.formName}
+          </Title>
 
           <Button
             onClick={submit}
@@ -190,20 +204,20 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
         {/* Application Details */}
         <Box mb="md">
           <Title order={4} mb="sm" size="h5">
-            Loan Details
+            {t("loanDetails")}
           </Title>
           <Stack>
             <Paper withBorder p="xs" radius="sm" mb="sm" className="paper">
               <Group grow>
                 <AnimatedTextInput
-                  label="First Name"
+                  label={t("firstName")}
                   value={form.first_name}
                   defaultValue={form.first_name}
                   onChange={handleString("first_name")}
                   size={FS_INPUT}
                 />
                 <AnimatedTextInput
-                  label="Last Name"
+                  label={t("lastName")}
                   value={form.last_name}
                   defaultValue={form.last_name}
                   onChange={handleString("last_name")}
@@ -212,7 +226,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
               </Group>
               <Group grow>
                 <AnimatedTextInput
-                  label="Email"
+                  label={t("email")}
                   value={form.email}
                   defaultValue={form.email}
                   onChange={handleString("email")}
@@ -220,10 +234,15 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                 />
                 <Select
                   size={FS_INPUT}
-                  label="Loan Type"
-                  placeholder="Pick value"
+                  label={t("loanType")}
+                  placeholder={t("pickValue")}
                   defaultValue={"Conventional"}
-                  data={["Conventional", "FHA", "Jumbo", "VA Loan"]}
+                  data={[
+                    t("loanTypeConventional"),
+                    t("loanTypeFHA"),
+                    t("loanTypeJumbo"),
+                    t("loanTypeVALoan"),
+                  ]}
                 />
               </Group>
             </Paper>
@@ -238,7 +257,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
         <Box mb="md">
           <Group mb="sm" justify="space-between">
             <Title order={4} size="h5">
-              Income & Documents
+              {t("incomeDocuments")}
             </Title>
             <ActionIcon color="blue" size={FS_LABEL} variant="light">
               <IconPlus size={16} />
@@ -246,7 +265,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
           </Group>
           {form.income.length === 0 ? (
             <Text c="dimmed" size={FS_LABEL}>
-              No income sources added.
+              {t("noIncomeSourcesAdded")}
             </Text>
           ) : (
             <Stack>
@@ -259,11 +278,11 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                   className="paper"
                 >
                   <Text fw={500} size={FS_LABEL} mb="xs">
-                    Source {idx + 1}
+                    {t("source")} {idx + 1}
                   </Text>
                   <Group grow>
                     <AnimatedTextInput
-                      label="Employer"
+                      label={t("employer")}
                       value={src.employer}
                       defaultValue={src.employer}
                       onChange={(value) =>
@@ -389,12 +408,12 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
             <Divider my="xs" />
             <Box mb="md">
               <Title order={4} size="h5" mb="sm">
-                CPA Details
+                {t("cpaDetails")}
               </Title>
               <Stack>
                 <Group grow>
                   <AnimatedTextInput
-                    label="First Name"
+                    label={t("firstName")}
                     value={form.cpa_contact.first_name}
                     defaultValue={form.cpa_contact.first_name}
                     onChange={(value) =>
@@ -408,7 +427,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                     size={FS_INPUT}
                   />
                   <AnimatedTextInput
-                    label="Last Name"
+                    label={t("lastName")}
                     value={form.cpa_contact.last_name}
                     defaultValue={form.cpa_contact.last_name}
                     onChange={(value) =>
@@ -424,7 +443,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                 </Group>
                 <Group grow>
                   <AnimatedTextInput
-                    label="Phone"
+                    label={t("phone")}
                     value={form.cpa_contact.phone}
                     defaultValue={form.cpa_contact.phone}
                     onChange={(value) =>
@@ -438,7 +457,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                     size={FS_INPUT}
                   />
                   <AnimatedTextInput
-                    label="Email"
+                    label={t("email")}
                     value={form.cpa_contact.email}
                     defaultValue={form.cpa_contact.email}
                     onChange={(value) =>
@@ -453,7 +472,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                   />
                 </Group>
                 <AnimatedTextInput
-                  label="License ID"
+                  label={t("licenseID")}
                   value={form.cpa_contact.licenseId}
                   defaultValue={form.cpa_contact.licenseId}
                   onChange={(value) =>

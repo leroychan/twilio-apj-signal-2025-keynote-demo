@@ -56,18 +56,23 @@ export const selectScreenRequestSessions = createSelector(
   [selectAllSessions],
   (sessions) =>
     sessions.filter(
-      (session) => session?.screenControl?.permission === "requested",
-    ),
+      (session) => session?.screenControl?.permission === "requested"
+    )
+);
+
+export const selectSessionLanguage = createSelector(
+  [selectSessionById],
+  (session) => session?.screenControl?.language ?? "en-AU"
 );
 
 export const selectRecallItems = createSelector(
   [selectSessionById],
-  (session) => session?.recall?.items ?? [],
+  (session) => session?.recall?.items ?? []
 );
 
 export const selectCallSummary = createSelector(
   [selectSessionById],
-  (session) => session?.summary,
+  (session) => session?.summary
 );
 
 // ========================================
@@ -81,7 +86,7 @@ export const {
 } = sessionsSlice.actions;
 
 export type UpdateSessionContext<
-  K extends keyof StoreSessionContext = keyof StoreSessionContext,
+  K extends keyof StoreSessionContext = keyof StoreSessionContext
 > = {
   callSid: string;
   key: K;

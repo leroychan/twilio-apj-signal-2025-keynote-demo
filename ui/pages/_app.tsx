@@ -1,3 +1,4 @@
+import { I18nProvider } from "@/context/I18nContext";
 import { BackendHeader, FrontendHeader } from "@/components/Header";
 import { Helmet } from "@/components/Helmet";
 import { ScreenRequestModal } from "@/components/ScreenRequestModal";
@@ -95,12 +96,12 @@ function OwlMortgage({ Component, pageProps }: AppProps) {
   usePageChangeListener();
 
   return (
-    <>
+    <I18nProvider>
       <main>
         <Component {...pageProps} />
       </main>
       <ScreenRequestModal />
-    </>
+    </I18nProvider>
   );
 }
 
