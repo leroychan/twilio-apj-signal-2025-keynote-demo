@@ -7,16 +7,19 @@ import { TWILIO_FLEX_WORKFLOW_SID } from "../../env.js";
 export const callWrapupWebhookHandler: RequestHandler = async (req, res) => {
   const payload = req.body;
   const callSid = payload.CallSid;
-  const handoffData = JSON.parse(payload.HandoffData);
+  const handoffData = JSON.parse(payload.HandoffData ?? JSON.stringify({}));
   const destination = handoffData?.data?.destination || "unknown";
 
   const log = new ServerlessLogger();
 
   try {
+    log.info(
+      CALL_WRAPUP_WEBHOOK_ROUTE,
+      `call wrapup webhook received. transferring to ${destination}. ${JSON.stringify(
+        payload
+      )}`
+    );
 
-    
-    log.info(CALL_WRAPUP_WEBHOOK_ROUTE, `call wrapup webhook received. transferring to ${destination}. ${JSON.stringify(payload)}`);    
-    
     let twiml = "";
     switch (destination) {
       case "agent":
@@ -39,7 +42,7 @@ export const callWrapupWebhookHandler: RequestHandler = async (req, res) => {
                   </Response>`;
         break;
     }
-    log.info(CALL_WRAPUP_WEBHOOK_ROUTE, `twiml response: ${twiml}`);    
+    log.info(CALL_WRAPUP_WEBHOOK_ROUTE, `twiml response: ${twiml}`);
 
     res.status(200).type("text/xml").send(twiml);
   } catch (error) {

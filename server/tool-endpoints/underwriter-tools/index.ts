@@ -97,7 +97,7 @@ export const extract_document_data: RequestHandler = async (req, res) => {
       first_name: "John",
       last_name: "Bookman",
 
-      phone: "+18885550001",
+      phone: "+618885550001",
       email: "jbookman@cpa.com",
     },
   };
@@ -336,6 +336,6 @@ async function sleep(ms = 250) {
   return new Promise((resolve) =>
     setTimeout(() => {
       resolve(null);
-    }, ms),
+    }, ms)
   );
 }

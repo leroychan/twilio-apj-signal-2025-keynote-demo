@@ -47,7 +47,7 @@ export const ErrorModal = ({ opened, onClose }: ErrorModalProps) => {
           information. Please check your inputs and try again.
         </Text>
         <Text size="sm" c="dimmed">
-          Contact Owl Support at 1 (800) Owl-Loans
+          Contact Owl Support at +61468031717
         </Text>
         <Button color="red" onClick={onClose} fullWidth mt="md">
           Close

@@ -89,6 +89,7 @@ async function switch_language(
   args: SwitchLanguageArgs,
   deps: ToolExecutionDependencies
 ) {
+  deps.relay.switchSTTLanguage(args.language);
   deps.relay.switchTTSLanguage(args.language);
   deps.store.context.update((ctx) => ({
     screenControl: {
