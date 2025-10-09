@@ -39,7 +39,7 @@ const SLICE_NAME = "sync";
 
 let syncClient: SyncClient | undefined;
 const identity = makeUISyncIdentity(
-  `${Math.random()}`.slice(2, 2 + 9).padStart(9, "0"),
+  `${Math.random()}`.slice(2, 2 + 9).padStart(9, "0")
 );
 
 type SyncConnectionState = ConnectionState | "started";
@@ -106,14 +106,14 @@ export const syncSlice = createSlice({
     // ========================================
     setInitialCallDataLoadStatus(
       state,
-      { payload }: PayloadAction<FetchStatus>,
+      { payload }: PayloadAction<FetchStatus>
     ) {
       state.initialCallDataLoadStatus = payload;
     },
 
     setCallInitStatus(
       state,
-      { payload }: PayloadAction<{ callSid: string } & Partial<CallInitStatus>>,
+      { payload }: PayloadAction<{ callSid: string } & Partial<CallInitStatus>>
     ) {
       if (!state.callInitMap[payload.callSid])
         state.callInitMap[payload.callSid] = {
@@ -135,7 +135,7 @@ export const syncSlice = createSlice({
     // ========================================
     setInitialUserDataLoadStatus(
       state,
-      { payload }: PayloadAction<FetchStatus>,
+      { payload }: PayloadAction<FetchStatus>
     ) {
       state.initialUserDataLoadStatus = payload;
     },
@@ -144,7 +144,7 @@ export const syncSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<{ userId: string } & Partial<UserFormInitStatus>>,
+      }: PayloadAction<{ userId: string } & Partial<UserFormInitStatus>>
     ) {
       if (!state.userFormInitMap[payload.userId])
         state.userFormInitMap[payload.userId] = {
@@ -163,7 +163,7 @@ export const syncSlice = createSlice({
     // ========================================
     setSyncConnectionState(
       state,
-      { payload }: PayloadAction<SyncConnectionState>,
+      { payload }: PayloadAction<SyncConnectionState>
     ) {
       state.syncConnectionState = payload;
     },
@@ -177,12 +177,12 @@ export const syncSlice = createSlice({
     },
     removeIncomingCallSid(state, { payload }: PayloadAction<string>) {
       state.incomingCallSids = state.incomingCallSids.filter(
-        (callSid) => payload !== callSid,
+        (callSid) => payload !== callSid
       );
     },
     setIncomingCallStreamInitStatus(
       state,
-      { payload }: PayloadAction<FetchStatus>,
+      { payload }: PayloadAction<FetchStatus>
     ) {
       state.incomingCallStreamInitStatus = payload;
     },
@@ -193,12 +193,12 @@ export const syncSlice = createSlice({
     },
     removeConnectedCallSid(state, { payload }: PayloadAction<string>) {
       state.connectedCallSids = state.connectedCallSids.filter(
-        (callSid) => payload !== callSid,
+        (callSid) => payload !== callSid
       );
     },
     setConnectedCallStreamStatus(
       state,
-      { payload }: PayloadAction<FetchStatus>,
+      { payload }: PayloadAction<FetchStatus>
     ) {
       state.connectedCallStreamInitStatus = payload;
     },
@@ -220,7 +220,7 @@ export const syncSlice = createSlice({
 
     removePageChange(state, { payload }: PayloadAction<string>) {
       state.pageChangeRequests = state.pageChangeRequests.filter(
-        (item) => item.id !== payload,
+        (item) => item.id !== payload
       );
     },
   },
@@ -243,7 +243,7 @@ function getCallInitMap(state: RootState) {
 
 function getCallInitStatus(
   state: RootState,
-  callSid: string,
+  callSid: string
 ): CallInitStatus | undefined {
   return getCallInitMap(state)[callSid];
 }
@@ -263,7 +263,7 @@ function getFormInitStatusMap(state: RootState) {
 
 function getUserFormInitStatus(
   state: RootState,
-  userId: string,
+  userId: string
 ): UserFormInitStatus | undefined {
   return getFormInitStatusMap(state)[userId];
 }
@@ -387,7 +387,7 @@ export const fetchInitialCallData = (): AppThunk => async (dispatch) => {
           callSid: meta.callSid,
           key: "dateCreated",
           value: meta.dateCreated,
-        }),
+        })
       );
 
     const sessionsPage2 = await fetchSessionMeta(2); // returns every call
@@ -398,7 +398,7 @@ export const fetchInitialCallData = (): AppThunk => async (dispatch) => {
           callSid: meta.callSid,
           key: "dateCreated",
           value: meta.dateCreated,
-        }),
+        })
       );
 
     dispatch(setInitialCallDataLoadStatus("done"));
@@ -469,21 +469,21 @@ export function useInitializeCall(callSid?: string) {
       // add sync client listeners
       map.on("itemAdded", ({ item }) =>
         dispatch(
-          updateSessionContext({ callSid, key: item.key, value: item.data }),
-        ),
+          updateSessionContext({ callSid, key: item.key, value: item.data })
+        )
       );
       map.on(
         "itemUpdated",
         ({ item, isLocal }) =>
           !isLocal &&
           dispatch(
-            updateSessionContext({ callSid, key: item.key, value: item.data }),
-          ),
+            updateSessionContext({ callSid, key: item.key, value: item.data })
+          )
       );
       map.on(
         "itemRemoved",
         ({ key }) =>
-          dispatch(updateSessionContext({ callSid, key, value: undefined })), // SyncMapItems represent a large JSON object, hence an item being removed is equivalent to it being undefined
+          dispatch(updateSessionContext({ callSid, key, value: undefined })) // SyncMapItems represent a large JSON object, hence an item being removed is equivalent to it being undefined
       );
 
       // fetch session context after adding listeners
@@ -494,7 +494,7 @@ export function useInitializeCall(callSid?: string) {
             callSid,
             key: item.key,
             value: item.data,
-          } as UpdateSessionContext),
+          } as UpdateSessionContext)
         );
 
       dispatch(setCallInitStatus({ callSid, context: "done" }));
@@ -512,7 +512,7 @@ export function useInitializeCall(callSid?: string) {
       // fetch turns after adding listeners
       const result = await map.getItems();
       dispatch(
-        addManyTurns(result.items.map((item) => item.data as TurnRecord)),
+        addManyTurns(result.items.map((item) => item.data as TurnRecord))
       );
 
       dispatch(setCallInitStatus({ callSid, turns: "done" }));
@@ -529,7 +529,7 @@ export function useInitializeCall(callSid?: string) {
 
       const result = await map.getItems();
       dispatch(
-        addManyLogs(result.items.map((item) => item.data as DemoLogItem)),
+        addManyLogs(result.items.map((item) => item.data as DemoLogItem))
       );
 
       dispatch(setCallInitStatus({ callSid, logs: "done" }));
@@ -552,7 +552,7 @@ export function useInitializeUserForms() {
 
   const userId = useAppSelector(getActiveUserId);
   const formStatus = useAppSelector((state) =>
-    getUserFormInitStatus(state, userId),
+    getUserFormInitStatus(state, userId)
   );
   const syncClient = useSyncClient();
 
@@ -569,6 +569,7 @@ export function useInitializeUserForms() {
       map.on("itemAdded", ({ isLocal, item }) => {
         if (isLocal) return;
         if (!("formName" in item.data)) return; // ignore non-forms
+        console.log("test");
         dispatch(addOneForm(item.data));
       });
 

@@ -19,11 +19,10 @@ import {
 } from "@mantine/core";
 import { nanoid } from "@reduxjs/toolkit";
 import { IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ErrorModal, SuccessModal } from "./MortgageForm/FormModals";
 import { AnimatedTextInput } from "./MortgageForm/TextInputAnimated";
 import { useI18n } from "@/context/I18nContext";
-
 const FS_INPUT = "md";
 const FS_LABEL = "lg";
 
@@ -44,11 +43,13 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
 
   const { t, setLang } = useI18n();
 
-  setLang(
-    session?.call?.status !== "completed" && session?.screenControl?.language
-      ? session.screenControl.language
-      : "en-AU"
-  );
+  useEffect(() => {
+    setLang(
+      session?.call?.status !== "completed" && session?.screenControl?.language
+        ? session.screenControl.language
+        : "en-AU"
+    );
+  }, [session?.call?.status, session?.screenControl?.language, setLang]);
 
   if (!form) return null;
 
@@ -295,7 +296,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                       size={FS_INPUT}
                     />
                     <AnimatedTextInput
-                      label="Employment Type"
+                      label={t("employmentType")}
                       value={src.employment_type}
                       defaultValue={src.employment_type}
                       onChange={(value) =>
@@ -313,7 +314,7 @@ export function MortgageForm({ formName }: { formName: FormNameType }) {
                       size={FS_INPUT}
                     />
                     <NumberInput
-                      label="Monthly Income"
+                      label={t("monthlyIncome")}
                       value={src.monthly_income}
                       onChange={(value) =>
                         update({

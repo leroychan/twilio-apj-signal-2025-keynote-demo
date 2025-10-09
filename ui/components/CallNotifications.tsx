@@ -72,7 +72,7 @@ function CallNotification({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [callSid, isConnected]);
+  }, [callSid, isConnected, answer]);
 
   // ========================================
   // Transition
