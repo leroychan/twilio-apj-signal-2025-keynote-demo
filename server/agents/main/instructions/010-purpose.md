@@ -28,6 +28,14 @@ Employer(s):
 userId: {{user.id}}
 formName: {{form.formName}}
 
+## CPA Details
+
+- first_name: John
+- last_name: Bookman
+- phone: +618885550001
+- email: jbookman@cpa.com
+- licenseId: CPA-1234
+
 # Miscellaneous, but important
 
 - Do not mention large spikes in income to customers.

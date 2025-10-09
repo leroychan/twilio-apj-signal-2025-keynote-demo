@@ -569,7 +569,6 @@ export function useInitializeUserForms() {
       map.on("itemAdded", ({ isLocal, item }) => {
         if (isLocal) return;
         if (!("formName" in item.data)) return; // ignore non-forms
-        console.log("test");
         dispatch(addOneForm(item.data));
       });
 
@@ -591,7 +590,7 @@ export function useInitializeUserForms() {
 
       const result = await map.getItems();
       for (const item of result.items) {
-        if (!("formName" in item.data)) return; // ignore non-forms
+        if (!("formName" in item.data)) continue; // ignore non-forms
         const form = item.data as FormRecord;
 
         dispatch(setOneForm(form));

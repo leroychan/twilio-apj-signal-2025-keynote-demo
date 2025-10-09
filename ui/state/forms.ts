@@ -61,16 +61,15 @@ export const {
 
 export const selectUserForms = createSelector(
   [getActiveUserId, selectAllForms],
-  (userId, forms) => forms.filter((form) => form.userId === userId),
+  (userId, forms) => forms.filter((form) => form.userId === userId)
 );
 
 export function getUserForm(
   state: RootState,
-  formName: FormNameType | undefined,
+  formName: FormNameType | undefined
 ) {
   const _formName = formName?.toLowerCase();
   const forms = selectUserForms(state);
-
   return forms.find((form) => form.formName.toLowerCase() === _formName);
 }
 
@@ -131,8 +130,8 @@ export const updateOneForm =
             await map.set(latestForm.id, latestForm);
           },
           500,
-          { leading: false },
-        ),
+          { leading: false }
+        )
       );
     }
 
