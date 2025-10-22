@@ -34,6 +34,8 @@ export function makeConversationRelayTwiML({
     ...params,
 
     url: `wss://${HOSTNAME}${CONVERSATION_RELAY_ROUTE}`, // the websocket route defined below
+    // @ts-ignore
+    byottsConnector: "Default_Minimax",
   });
 
   conversationRelay.parameter({
@@ -47,6 +49,13 @@ export function makeConversationRelayTwiML({
     transcriptionProvider: "deepgram",
     code: "zh-CN",
   });
+
+  // conversationRelay.language({
+  //   ttsProvider: "minimax",
+  //   voice: "Cantonese_ProfessionalHost（F)",
+  //   transcriptionProvider: "deepgram",
+  //   code: "zh-HK",
+  // });
 
   Object.entries(parameters).forEach(([name, value]) =>
     conversationRelay.parameter({ name, value: JSON.stringify(value) })
